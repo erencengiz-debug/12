@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: sase-eslestirme
+
+  profiles:
+    active: ${APP_PROFILE:dev}
+
+  # ─── DataSource ──────────────────────────────────────────
+  datasource:
+    url: ${SUPABASE_DB_URL}
+    username: ${SUPABASE_DB_USERNAME}
+    password: ${SUPABASE_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: SaseHikariPool
+
+  # ─── JPA / Hibernate ─────────────────────────────────────
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: public
+        jdbc:
+          time_zone: UTC
+
+  # ─── Flyway ──────────────────────────────────────────────
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 1
+    locations: classpath:db/migration
+    schemas: public
+
+  # ─── Security / JWT ──────────────────────────────────────
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${SUPABASE_JWKS_URL}
+          issuer-uri: ${SUPABASE_PROJECT_URL}/auth/v1
+
+  # ─── Thymeleaf ───────────────────────────────────────────
+  thymeleaf:
+    encoding: UTF-8
+    mode: HTML
+
+# ─── Server ────────────────────────────────────────────────
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+  error:
+    whitelabel:
+      enabled: false
+
+# ─── Uygulama custom ayarları ──────────────────────────────
+app:
+  supabase:
+    project-url: ${SUPABASE_PROJECT_URL}
+    anon-key: ${SUPABASE_ANON_KEY}
+  cookie:
+    secure: ${COOKIE_SECURE:false}
+    same-site: Lax
+    access-token-name: sb-access-token
+    refresh-token-name: sb-refresh-token
+
+# ─── Logging ───────────────────────────────────────────────
+logging:
+  level:
+    com.sase.app: INFO
+    org.springframework.security: INFO
+    org.flywaydb: INFO

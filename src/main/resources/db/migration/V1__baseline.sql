@@ -1,0 +1,4 @@
+-- Baseline migration: Supabase'de tablolar zaten mevcut.
+-- Bu dosya kasıtlı olarak boş bırakılmıştır.
+-- Flyway baseline-on-migrate=true ile bu versiyon başlangıç noktası kabul edilir.
+-- Yeni migration'lar V2__*.sql, V3__*.sql şeklinde eklenecektir.

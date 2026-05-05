@@ -1,0 +1,23 @@
+# ════════════════════════════════════════════════════════════
+#  PROD profili
+# ════════════════════════════════════════════════════════════
+
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  thymeleaf:
+    cache: true
+
+app:
+  cookie:
+    secure: true   # prod'da HTTPS zorunlu
+
+logging:
+  level:
+    com.sase.app: WARN
+    org.springframework.security: WARN
+    org.flywaydb: WARN
