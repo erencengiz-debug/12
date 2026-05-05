@@ -114,9 +114,17 @@
     </div>
 
     <div class="user-area">
-        <div class="text-white-50 small mb-2">
+        <div class="text-white-50 small mb-1">
             <i class="bi bi-person-circle me-1"></i>
-            <span sec:authentication="name">Kullanıcı</span>
+            <span th:if="${currentUser}" th:text="${currentUser.displayName()}"></span>
+            <span th:unless="${currentUser}" sec:authentication="name">Kullanıcı</span>
+        </div>
+        <div th:if="${currentUser}" class="mb-2">
+            <span th:switch="${currentUser.role?.name()}">
+                <span th:case="'ADMIN'" class="badge bg-danger" style="font-size:.65rem;">Admin</span>
+                <span th:case="'YONETICI'" class="badge bg-warning text-dark" style="font-size:.65rem;">Yönetici</span>
+                <span th:case="*" class="badge bg-secondary" style="font-size:.65rem;">Çalışan</span>
+            </span>
         </div>
         <form method="post" th:action="@{/logout}">
             <button class="btn btn-sm btn-outline-light w-100">

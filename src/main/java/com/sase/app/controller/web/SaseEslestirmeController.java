@@ -1,19 +1,20 @@
 package com.sase.app.controller.web;
 
+import com.sase.app.dto.sase.SaseEslestirmeForm;
 import com.sase.app.entity.SaseEslestirme;
 import com.sase.app.mapper.SaseEslestirmeMapper;
 import com.sase.app.service.SaseEslestirmeService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Controller
@@ -42,46 +43,37 @@ public class SaseEslestirmeController {
     @PostMapping
     public String save(
             @AuthenticationPrincipal Jwt jwt,
-            @RequestParam String baslik,
-            @RequestParam(required = false) String saseKod1,
-            @RequestParam(required = false) String saseKod2,
-            @RequestParam(required = false) String saseKod3,
-            @RequestParam(required = false) String saseKod4,
-            @RequestParam(required = false) String saseKod5,
-            @RequestParam(required = false) String saseKod6,
-            @RequestParam(required = false) String saseKod7,
-            @RequestParam(required = false) String saseKod8,
-            @RequestParam(required = false) String saseKod9,
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) String modelYili,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate uretimTarihiBaslangic,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate uretimTarihiBitis,
-            @RequestParam(required = false) String motorKodu,
-            @RequestParam(required = false) String sanzimanKodu,
-            @RequestParam(required = false) String satisTipi,
-            @RequestParam(required = false) String aksTahrigiTanimi,
+            @Valid SaseEslestirmeForm form,
+            BindingResult bindingResult,
+            Model model,
             RedirectAttributes ra
     ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            model.addAttribute("activePage", "sase");
+            return "sase/form";
+        }
+
         SaseEslestirme eslestirme = SaseEslestirme.builder()
                 .userId(UUID.fromString(jwt.getSubject()))
-                .baslik(baslik)
-                .saseKod1(blankToNull(saseKod1))
-                .saseKod2(blankToNull(saseKod2))
-                .saseKod3(blankToNull(saseKod3))
-                .saseKod4(blankToNull(saseKod4))
-                .saseKod5(blankToNull(saseKod5))
-                .saseKod6(blankToNull(saseKod6))
-                .saseKod7(blankToNull(saseKod7))
-                .saseKod8(blankToNull(saseKod8))
-                .saseKod9(blankToNull(saseKod9))
-                .model(blankToNull(model))
-                .modelYili(blankToNull(modelYili))
-                .uretimTarihiBaslangic(uretimTarihiBaslangic)
-                .uretimTarihiBitis(uretimTarihiBitis)
-                .motorKodu(blankToNull(motorKodu))
-                .sanzimanKodu(blankToNull(sanzimanKodu))
-                .satisTipi(blankToNull(satisTipi))
-                .aksTahrigiTanimi(blankToNull(aksTahrigiTanimi))
+                .baslik(form.baslik())
+                .saseKod1(blankToNull(form.saseKod1()))
+                .saseKod2(blankToNull(form.saseKod2()))
+                .saseKod3(blankToNull(form.saseKod3()))
+                .saseKod4(blankToNull(form.saseKod4()))
+                .saseKod5(blankToNull(form.saseKod5()))
+                .saseKod6(blankToNull(form.saseKod6()))
+                .saseKod7(blankToNull(form.saseKod7()))
+                .saseKod8(blankToNull(form.saseKod8()))
+                .saseKod9(blankToNull(form.saseKod9()))
+                .model(blankToNull(form.model()))
+                .modelYili(blankToNull(form.modelYili()))
+                .uretimTarihiBaslangic(form.uretimTarihiBaslangic())
+                .uretimTarihiBitis(form.uretimTarihiBitis())
+                .motorKodu(blankToNull(form.motorKodu()))
+                .sanzimanKodu(blankToNull(form.sanzimanKodu()))
+                .satisTipi(blankToNull(form.satisTipi()))
+                .aksTahrigiTanimi(blankToNull(form.aksTahrigiTanimi()))
                 .executed(false)
                 .build();
 

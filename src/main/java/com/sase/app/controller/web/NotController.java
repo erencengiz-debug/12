@@ -1,19 +1,20 @@
 package com.sase.app.controller.web;
 
+import com.sase.app.dto.not.NotForm;
 import com.sase.app.entity.Not;
 import com.sase.app.mapper.NotMapper;
 import com.sase.app.service.NotService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
@@ -42,16 +43,22 @@ public class NotController {
     @PostMapping
     public String save(
             @AuthenticationPrincipal Jwt jwt,
-            @RequestParam String baslik,
-            @RequestParam(required = false) String aciklama,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tarih,
+            @Valid NotForm form,
+            BindingResult bindingResult,
+            Model model,
             RedirectAttributes ra
     ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            model.addAttribute("activePage", "not");
+            return "not/form";
+        }
+
         Not not = Not.builder()
                 .userId(UUID.fromString(jwt.getSubject()))
-                .baslik(baslik)
-                .aciklama(aciklama != null && !aciklama.isBlank() ? aciklama : null)
-                .tarih(tarih.atStartOfDay().atOffset(ZoneOffset.UTC))
+                .baslik(form.baslik())
+                .aciklama(form.aciklama() != null && !form.aciklama().isBlank() ? form.aciklama() : null)
+                .tarih(form.tarih().atStartOfDay().atOffset(ZoneOffset.UTC))
                 .build();
 
         notService.kaydet(not);

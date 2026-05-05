@@ -15,6 +15,12 @@
     </div>
 
     <div class="page-body">
+        <div th:if="${errors}" class="alert alert-danger py-2 mb-3">
+            <ul class="mb-0 ps-3">
+                <li th:each="err : ${errors}" th:text="${err.defaultMessage}"></li>
+            </ul>
+        </div>
+
         <form th:action="@{/sase}" method="post">
 
             <div class="row g-3">

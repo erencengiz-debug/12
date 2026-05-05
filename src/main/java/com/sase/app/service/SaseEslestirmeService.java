@@ -5,6 +5,7 @@ import com.sase.app.repository.SaseEslestirmeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ public class SaseEslestirmeService {
     }
 
     @Transactional
+    @PreAuthorize("isAuthenticated()")
     public SaseEslestirme kaydet(SaseEslestirme eslestirme) {
         return saseEslestirmeRepository.save(eslestirme);
     }
@@ -48,6 +50,7 @@ public class SaseEslestirmeService {
     }
 
     @Transactional
+    @PreAuthorize("isAuthenticated()")
     public void sil(UUID id) {
         saseEslestirmeRepository.deleteById(id);
     }

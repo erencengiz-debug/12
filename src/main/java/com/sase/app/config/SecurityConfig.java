@@ -25,6 +25,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties(AppProperties.class)
+@org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
