@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}"
+      lang="tr">
+<head>
+    <title>Yeni Şase Eşleştirme</title>
+</head>
+<body>
+<th:block layout:fragment="content">
+
+    <div class="page-header">
+        <h1><i class="bi bi-plus-circle me-2 text-primary"></i>Yeni Şase Eşleştirme</h1>
+        <p class="text-muted mb-0">Eşleştirilecek şase kodlarını ve araç kriterlerini girin.</p>
+    </div>
+
+    <div class="page-body">
+        <form th:action="@{/sase}" method="post">
+
+            <div class="row g-3">
+
+                <!-- Temel Bilgiler -->
+                <div class="col-12">
+                    <div class="card p-4">
+                        <h6 class="fw-semibold mb-3 text-muted text-uppercase" style="font-size:.75rem; letter-spacing:.07em;">
+                            Temel Bilgiler
+                        </h6>
+                        <div class="mb-3" style="max-width: 500px;">
+                            <label class="form-label fw-semibold">Başlık <span class="text-danger">*</span></label>
+                            <input type="text" name="baslik" class="form-control" required
+                                   placeholder="Örn: VW Golf 7 Motor Paketi">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Şase Kodları -->
+                <div class="col-12">
+                    <div class="card p-4">
+                        <h6 class="fw-semibold mb-3 text-muted text-uppercase" style="font-size:.75rem; letter-spacing:.07em;">
+                            Şase Kodları (en az 1, en fazla 9)
+                        </h6>
+                        <div class="row g-2">
+                            <th:block th:each="i : ${#numbers.sequence(1,9)}">
+                                <div class="col-sm-6 col-md-4">
+                                    <input type="text" th:name="|saseKod${i}|" class="form-control font-monospace"
+                                           th:placeholder="|Şase Kodu ${i}|" maxlength="50">
+                                </div>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Araç Kriterleri -->
+                <div class="col-12">
+                    <div class="card p-4">
+                        <h6 class="fw-semibold mb-3 text-muted text-uppercase" style="font-size:.75rem; letter-spacing:.07em;">
+                            Araç Kriterleri (isteğe bağlı)
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-sm-6 col-md-3">
+                                <label class="form-label">Model</label>
+                                <input type="text" name="model" class="form-control" placeholder="Örn: Golf">
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <label class="form-label">Model Yılı</label>
+                                <input type="text" name="modelYili" class="form-control" placeholder="Örn: 2020">
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <label class="form-label">Üretim Başlangıç</label>
+                                <input type="date" name="uretimTarihiBaslangic" class="form-control">
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <label class="form-label">Üretim Bitiş</label>
+                                <input type="date" name="uretimTarihiBitis" class="form-control">
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <label class="form-label">Motor Kodu</label>
+                                <input type="text" name="motorKodu" class="form-control" placeholder="Örn: CZCA">
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <label class="form-label">Şanzıman Kodu</label>
+                                <input type="text" name="sanzimanKodu" class="form-control">
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <label class="form-label">Satış Tipi</label>
+                                <input type="text" name="satisTipi" class="form-control">
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <label class="form-label">Aks Tahrik Tanımı</label>
+                                <input type="text" name="aksTahrigiTanimi" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /row -->
+
+            <div class="mt-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i>Kaydet
+                </button>
+                <a th:href="@{/sase}" class="btn btn-outline-secondary">İptal</a>
+            </div>
+        </form>
+    </div>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}"
+      lang="tr">
+<head>
+    <title>Eşleştirme Detayı</title>
+</head>
+<body>
+<th:block layout:fragment="content">
+
+    <div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-2">
+        <div>
+            <h1><i class="bi bi-diagram-3 me-2 text-danger"></i><span th:text="${e.baslik}"></span></h1>
+            <p class="text-muted mb-0"
+               th:text="${e.createdAt != null} ? 'Oluşturulma: ' + ${#temporals.format(e.createdAt, 'dd.MM.yyyy HH:mm')} : ''"></p>
+        </div>
+        <div class="d-flex gap-2 mt-1">
+            <form th:unless="${e.executed}" th:action="@{/sase/{id}/calistir(id=${e.id})}" method="post">
+                <button class="btn btn-sm btn-success">
+                    <i class="bi bi-play-fill me-1"></i>Eşleştirmeyi Çalıştır
+                </button>
+            </form>
+            <a th:href="@{/sase}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Geri
+            </a>
+        </div>
+    </div>
+
+    <div class="page-body">
+        <div class="row g-3">
+
+            <!-- Sol: Detaylar -->
+            <div class="col-lg-7">
+
+                <div class="card p-4 mb-3">
+                    <h6 class="fw-semibold mb-3">Şase Kodları</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <code th:if="${e.saseKod1}" class="badge bg-dark fs-6 fw-normal" th:text="${e.saseKod1}"></code>
+                        <code th:if="${e.saseKod2}" class="badge bg-dark fs-6 fw-normal" th:text="${e.saseKod2}"></code>
+                        <code th:if="${e.saseKod3}" class="badge bg-dark fs-6 fw-normal" th:text="${e.saseKod3}"></code>
+                        <code th:if="${e.saseKod4}" class="badge bg-dark fs-6 fw-normal" th:text="${e.saseKod4}"></code>
+                        <code th:if="${e.saseKod5}" class="badge bg-dark fs-6 fw-normal" th:text="${e.saseKod5}"></code>
+                        <code th:if="${e.saseKod6}" class="badge bg-dark fs-6 fw-normal" th:text="${e.saseKod6}"></code>
+                        <code th:if="${e.saseKod7}" class="badge bg-dark fs-6 fw-normal" th:text="${e.saseKod7}"></code>
+                        <code th:if="${e.saseKod8}" class="badge bg-dark fs-6 fw-normal" th:text="${e.saseKod8}"></code>
+                        <code th:if="${e.saseKod9}" class="badge bg-dark fs-6 fw-normal" th:text="${e.saseKod9}"></code>
+                    </div>
+                </div>
+
+                <div class="card p-4">
+                    <h6 class="fw-semibold mb-3">Araç Kriterleri</h6>
+                    <dl class="row mb-0 small">
+                        <dt class="col-sm-4 text-muted">Model</dt>
+                        <dd class="col-sm-8" th:text="${e.model} ?: '–'"></dd>
+
+                        <dt class="col-sm-4 text-muted">Model Yılı</dt>
+                        <dd class="col-sm-8" th:text="${e.modelYili} ?: '–'"></dd>
+
+                        <dt class="col-sm-4 text-muted">Üretim Aralığı</dt>
+                        <dd class="col-sm-8">
+                            <span th:text="${e.uretimTarihiBaslangic != null} ? ${#temporals.format(e.uretimTarihiBaslangic,'dd.MM.yyyy')} : '–'"></span>
+                            <span th:if="${e.uretimTarihiBitis != null}">
+                                → <span th:text="${#temporals.format(e.uretimTarihiBitis,'dd.MM.yyyy')}"></span>
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4 text-muted">Motor Kodu</dt>
+                        <dd class="col-sm-8" th:text="${e.motorKodu} ?: '–'"></dd>
+
+                        <dt class="col-sm-4 text-muted">Şanzıman Kodu</dt>
+                        <dd class="col-sm-8" th:text="${e.sanzimanKodu} ?: '–'"></dd>
+
+                        <dt class="col-sm-4 text-muted">Satış Tipi</dt>
+                        <dd class="col-sm-8" th:text="${e.satisTipi} ?: '–'"></dd>
+
+                        <dt class="col-sm-4 text-muted">Aks Tahrik</dt>
+                        <dd class="col-sm-8" th:text="${e.aksTahrigiTanimi} ?: '–'"></dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Sağ: Sonuç -->
+            <div class="col-lg-5">
+                <div class="card p-4">
+                    <h6 class="fw-semibold mb-3">Eşleştirme Sonucu</h6>
+
+                    <div th:if="${e.executed}">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="stat-icon bg-success-subtle text-success">
+                                <i class="bi bi-check2-circle"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">Eşleşen Şase Adedi</div>
+                                <div class="fw-bold fs-4" th:text="${e.eslenikSaseAdedi} ?: 0"></div>
+                            </div>
+                        </div>
+                        <div th:if="${e.executedDate}" class="text-muted small mb-3">
+                            <i class="bi bi-clock me-1"></i>
+                            <span th:text="${#temporals.format(e.executedDate, 'dd.MM.yyyy HH:mm')}"></span>
+                        </div>
+                        <div th:if="${e.degerliAciklamaStokKods}" class="mt-2">
+                            <div class="text-muted small fw-semibold mb-1">Stok Kodları:</div>
+                            <div class="font-monospace small bg-light rounded p-2"
+                                 th:text="${e.degerliAciklamaStokKods}"></div>
+                        </div>
+                    </div>
+
+                    <div th:unless="${e.executed}" class="text-center py-4 text-muted">
+                        <i class="bi bi-hourglass-split fs-3 d-block mb-2 text-warning"></i>
+                        Eşleştirme henüz çalıştırılmadı.<br>
+                        <small>"Eşleştirmeyi Çalıştır" butonuna basın.</small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

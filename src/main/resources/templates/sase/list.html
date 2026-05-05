@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}"
+      lang="tr">
+<head>
+    <title>Şase Eşleştirme</title>
+</head>
+<body>
+<th:block layout:fragment="content">
+
+    <div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-2">
+        <div>
+            <h1><i class="bi bi-diagram-3 me-2 text-danger"></i>Şase Eşleştirme</h1>
+            <p class="text-muted mb-0" th:text="|Toplam ${eslestirmeler.size()} kayıt|"></p>
+        </div>
+        <a th:href="@{/sase/yeni}" class="btn btn-primary btn-sm mt-1">
+            <i class="bi bi-plus-lg me-1"></i>Yeni Eşleştirme
+        </a>
+    </div>
+
+    <div class="page-body">
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th>Başlık</th>
+                        <th>Şase Kodları</th>
+                        <th>Model</th>
+                        <th class="text-center">Eşlenek Adedi</th>
+                        <th class="text-center">Durum</th>
+                        <th>Oluşturulma</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${eslestirmeler.empty}">
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                            Henüz eşleştirme kaydı yok.
+                            <a th:href="@{/sase/yeni}" class="d-block mt-2">İlk kaydı oluştur</a>
+                        </td>
+                    </tr>
+                    <tr th:each="e : ${eslestirmeler}">
+                        <td class="fw-semibold" th:text="${e.baslik}"></td>
+                        <td>
+                            <code th:if="${e.saseKod1}" th:text="${e.saseKod1}" class="me-1"></code>
+                            <code th:if="${e.saseKod2}" th:text="${e.saseKod2}" class="me-1"></code>
+                            <span th:if="${e.saseKod3}" class="text-muted small">…</span>
+                        </td>
+                        <td th:text="${e.model} ?: '–'"></td>
+                        <td class="text-center">
+                            <span th:if="${e.eslenikSaseAdedi != null}"
+                                  class="badge bg-primary-subtle text-primary fw-semibold"
+                                  th:text="${e.eslenikSaseAdedi}"></span>
+                            <span th:unless="${e.eslenikSaseAdedi != null}" class="text-muted">–</span>
+                        </td>
+                        <td class="text-center">
+                            <span th:if="${e.executed}" class="badge bg-success-subtle text-success">
+                                <i class="bi bi-check2 me-1"></i>Tamamlandı
+                            </span>
+                            <span th:unless="${e.executed}" class="badge bg-warning-subtle text-warning">
+                                <i class="bi bi-hourglass-split me-1"></i>Bekliyor
+                            </span>
+                        </td>
+                        <td class="text-muted small"
+                            th:text="${e.createdAt != null} ? ${#temporals.format(e.createdAt, 'dd.MM.yyyy HH:mm')} : '–'"></td>
+                        <td>
+                            <a th:href="@{/sase/{id}(id=${e.id})}" class="btn btn-sm btn-outline-primary py-0 me-1">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <form th:action="@{/sase/{id}/sil(id=${e.id})}" method="post" class="d-inline"
+                                  onsubmit="return confirm('Bu kaydı silmek istediğinize emin misiniz?')">
+                                <button class="btn btn-sm btn-outline-danger py-0">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>
