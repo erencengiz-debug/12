@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StokCikis {
+public class StokCikis extends CreatedAtEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,7 +42,4 @@ public class StokCikis {
 
     @Column(name = "notlar", columnDefinition = "text")
     private String notlar;
-
-    @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt;
 }

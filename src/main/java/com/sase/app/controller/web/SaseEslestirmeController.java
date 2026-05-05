@@ -1,6 +1,7 @@
 package com.sase.app.controller.web;
 
 import com.sase.app.entity.SaseEslestirme;
+import com.sase.app.mapper.SaseEslestirmeMapper;
 import com.sase.app.service.SaseEslestirmeService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Controller
@@ -22,12 +22,13 @@ import java.util.UUID;
 public class SaseEslestirmeController {
 
     private final SaseEslestirmeService saseEslestirmeService;
+    private final SaseEslestirmeMapper saseEslestirmeMapper;
 
     @GetMapping
     public String list(@AuthenticationPrincipal Jwt jwt, Model model) {
         UUID userId = UUID.fromString(jwt.getSubject());
         model.addAttribute("eslestirmeler",
-                saseEslestirmeService.kullaniciyaAit(userId));
+                saseEslestirmeMapper.toListDtos(saseEslestirmeService.kullaniciyaAit(userId)));
         model.addAttribute("activePage", "sase");
         return "sase/list";
     }
@@ -82,8 +83,6 @@ public class SaseEslestirmeController {
                 .satisTipi(blankToNull(satisTipi))
                 .aksTahrigiTanimi(blankToNull(aksTahrigiTanimi))
                 .executed(false)
-                .createdAt(OffsetDateTime.now())
-                .updatedAt(OffsetDateTime.now())
                 .build();
 
         SaseEslestirme saved = saseEslestirmeService.kaydet(eslestirme);

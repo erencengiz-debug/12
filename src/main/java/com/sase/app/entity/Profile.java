@@ -2,9 +2,7 @@ package com.sase.app.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Immutable;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -14,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Profile {
+public class Profile extends BaseEntity {
 
     @Id
     @Column(name = "id", updatable = false, nullable = false)
@@ -32,10 +30,4 @@ public class Profile {
 
     @Column(name = "aktif")
     private Boolean aktif;
-
-    @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
 }

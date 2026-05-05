@@ -1,8 +1,7 @@
 package com.sase.app.controller.web;
 
-import com.sase.app.entity.Stok;
+import com.sase.app.mapper.StokMapper;
 import com.sase.app.service.StokService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,12 +18,17 @@ import java.util.UUID;
 public class StokController {
 
     private final StokService stokService;
+    private final StokMapper stokMapper;
 
     @GetMapping
-    public String list(@RequestParam(required = false) String q, Model model) {
-        model.addAttribute("stoklar", q != null && !q.isBlank()
-                ? stokService.ara(q)
-                : stokService.hepsiniGetir());
+    public String list(
+            @RequestParam(required = false) String q,
+            @RequestParam(defaultValue = "0") int page,
+            Model model
+    ) {
+        var stokPage = stokService.listele(q, page);
+        model.addAttribute("stoklar", stokMapper.toListDtos(stokPage.getContent()));
+        model.addAttribute("stokPage", stokPage);
         model.addAttribute("q", q);
         model.addAttribute("activePage", "stok");
         return "stok/list";
@@ -32,13 +36,8 @@ public class StokController {
 
     @GetMapping("/{id}")
     public String detail(@PathVariable UUID id, Model model) {
-        try {
-            Stok stok = stokService.idIleGetir(id);
-            model.addAttribute("stok", stok);
-            model.addAttribute("aktivePage", "stok");
-        } catch (EntityNotFoundException e) {
-            return "redirect:/stok?errorMsg=Stok+bulunamadı";
-        }
+        model.addAttribute("stok", stokMapper.toDetailDto(stokService.idIleGetir(id)));
+        model.addAttribute("activePage", "stok");
         return "stok/detail";
     }
 }

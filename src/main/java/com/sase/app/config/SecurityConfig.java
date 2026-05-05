@@ -1,6 +1,7 @@
 package com.sase.app.config;
 
 import com.sase.app.security.CookieTokenFilter;
+import com.sase.app.service.AuthService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,10 +15,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.reactive.function.client.WebClient;
+
 
 @Configuration
 @EnableWebSecurity
@@ -27,7 +30,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            CookieTokenFilter cookieTokenFilter
+            CookieTokenFilter cookieTokenFilter,
+            AppProperties appProperties,
+            AuthService authService
     ) throws Exception {
         http
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -43,6 +48,25 @@ public class SecurityConfig {
                 .addFilterBefore(cookieTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .addLogoutHandler((request, response, authentication) -> {
+                            // Supabase oturumunu kapat
+                            if (authentication instanceof JwtAuthenticationToken jwtAuth) {
+                                String token = jwtAuth.getToken().getTokenValue();
+                                authService.signOut(token);
+                            }
+                            // Cookie'yi sil
+                            String cookieName = appProperties.cookie().accessTokenName();
+                            String sameSite = appProperties.cookie().sameSite();
+                            boolean secure = appProperties.cookie().secure();
+                            String header = cookieName + "=; HttpOnly; Path=/; Max-Age=0; SameSite=" + sameSite
+                                    + (secure ? "; Secure" : "");
+                            response.addHeader(HttpHeaders.SET_COOKIE, header);
+                        })
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                         .accessDeniedHandler((req, res, e) -> res.sendRedirect("/login"))

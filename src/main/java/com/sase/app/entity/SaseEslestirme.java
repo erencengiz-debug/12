@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SaseEslestirme {
+public class SaseEslestirme extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -86,11 +86,4 @@ public class SaseEslestirme {
 
     @Column(name = "degerli_aciklama_stok_kods", columnDefinition = "text")
     private String degerliAciklamaStokKods;
-
-    // ─── Audit ────────────────────────────────────────────────────────────────
-    @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
 }

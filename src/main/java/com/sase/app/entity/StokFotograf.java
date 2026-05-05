@@ -3,7 +3,6 @@ package com.sase.app.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -13,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StokFotograf {
+public class StokFotograf extends CreatedAtEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,7 +28,4 @@ public class StokFotograf {
 
     @Column(name = "sira")
     private Integer sira;
-
-    @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt;
 }
