@@ -21,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Slf4j
@@ -71,7 +72,7 @@ public class CookieTokenFilter extends OncePerRequestFilter {
     private String extractRole(Jwt jwt) {
         Map<String, Object> appMeta = jwt.getClaim("app_metadata");
         if (appMeta != null && appMeta.containsKey("role")) {
-            return appMeta.get("role").toString().toUpperCase();
+            return appMeta.get("role").toString().toUpperCase(Locale.ROOT);
         }
         return "USER";
     }

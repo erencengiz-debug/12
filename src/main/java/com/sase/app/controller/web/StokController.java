@@ -36,7 +36,7 @@ public class StokController {
 
     @GetMapping("/{id}")
     public String detail(@PathVariable UUID id, Model model) {
-        model.addAttribute("stok", stokMapper.toDetailDto(stokService.idIleGetir(id)));
+        model.addAttribute("stok", stokMapper.toDetailDto(stokService.detayGetir(id)));
         model.addAttribute("activePage", "stok");
         return "stok/detail";
     }

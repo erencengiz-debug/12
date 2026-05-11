@@ -24,15 +24,22 @@ public class StokService {
     private final StokRepository stokRepository;
 
     public Page<Stok> listele(String q, int page) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("stokAdi").ascending());
         if (q != null && !q.isBlank()) {
+            // search sorgusu ORDER BY içermiyor → sort pageable'a verilir
+            Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.ASC, "stokAdi"));
             return stokRepository.search(q.trim(), pageable);
         }
-        return stokRepository.findAllPaged(pageable);
+        // findAllPaged sorgusu zaten ORDER BY stokAdi içeriyor → sort verilmez
+        return stokRepository.findAllPaged(PageRequest.of(page, PAGE_SIZE));
     }
 
     public Stok idIleGetir(UUID id) {
         return stokRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Stok bulunamadı: " + id));
+    }
+
+    public Stok detayGetir(UUID id) {
+        return stokRepository.findDetailById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Stok bulunamadı: " + id));
     }
 

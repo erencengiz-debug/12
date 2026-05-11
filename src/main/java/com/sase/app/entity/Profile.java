@@ -24,8 +24,8 @@ public class Profile extends BaseEntity {
     @Column(name = "ad_soyad")
     private String adSoyad;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, columnDefinition = "user_role")
+    @Convert(converter = UserRoleConverter.class)
+    @Column(name = "role", nullable = false)
     private UserRole role;
 
     @Column(name = "aktif")

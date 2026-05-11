@@ -1,6 +1,7 @@
 package com.sase.app.dto.stok;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 public record StokDetailDto(
@@ -23,5 +24,9 @@ public record StokDetailDto(
         Boolean stokStatus,
         Boolean webStatus,
         Boolean bakim,
-        Boolean rektifiye
+        Boolean rektifiye,
+        List<MuadilKodDto> muadilKodlar,
+        List<StokFotografDto> fotograflar,
+        List<StokAlisDto> alisList,
+        List<StokCikisDto> cikisList
 ) {}

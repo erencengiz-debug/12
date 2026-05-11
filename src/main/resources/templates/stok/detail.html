@@ -9,6 +9,7 @@
 <body>
 <th:block layout:fragment="content">
 
+    <!-- Başlık -->
     <div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-2">
         <div>
             <h1>
@@ -28,85 +29,260 @@
     </div>
 
     <div class="page-body">
-        <div class="row g-3">
 
-            <!-- Genel Bilgiler -->
-            <div class="col-lg-6">
-                <div class="card p-4">
-                    <h6 class="fw-semibold mb-3">Genel Bilgiler</h6>
-                    <dl class="row mb-0 small">
-                        <dt class="col-sm-5 text-muted">Stok Adı</dt>
-                        <dd class="col-sm-7 fw-semibold" th:text="${stok.stokAdi}"></dd>
+        <!-- Tab Navigasyonu -->
+        <ul class="nav nav-tabs mb-3" id="stokDetailTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="genel-tab" data-bs-toggle="tab"
+                        data-bs-target="#genel" type="button" role="tab">
+                    <i class="bi bi-info-circle me-1"></i>Genel Bilgiler
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="muadil-tab" data-bs-toggle="tab"
+                        data-bs-target="#muadil" type="button" role="tab">
+                    <i class="bi bi-diagram-2 me-1"></i>Muadil Kodlar
+                    <span class="badge bg-secondary ms-1"
+                          th:text="${#lists.size(stok.muadilKodlar)}">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fotograflar-tab" data-bs-toggle="tab"
+                        data-bs-target="#fotograflar" type="button" role="tab">
+                    <i class="bi bi-images me-1"></i>Fotoğraflar
+                    <span class="badge bg-secondary ms-1"
+                          th:text="${#lists.size(stok.fotograflar)}">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="alis-tab" data-bs-toggle="tab"
+                        data-bs-target="#alis" type="button" role="tab">
+                    <i class="bi bi-box-arrow-in-down me-1"></i>Alış Geçmişi
+                    <span class="badge bg-secondary ms-1"
+                          th:text="${#lists.size(stok.alisList)}">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="cikis-tab" data-bs-toggle="tab"
+                        data-bs-target="#cikis" type="button" role="tab">
+                    <i class="bi bi-box-arrow-up me-1"></i>Çıkış Geçmişi
+                    <span class="badge bg-secondary ms-1"
+                          th:text="${#lists.size(stok.cikisList)}">0</span>
+                </button>
+            </li>
+        </ul>
 
-                        <dt class="col-sm-5 text-muted">Alternatif Ad</dt>
-                        <dd class="col-sm-7" th:text="${stok.alternatifStokAdi} ?: '–'"></dd>
+        <!-- Tab İçerikleri -->
+        <div class="tab-content" id="stokDetailTabContent">
 
-                        <dt class="col-sm-5 text-muted">Kısa İsim</dt>
-                        <dd class="col-sm-7" th:text="${stok.kisaIsmi} ?: '–'"></dd>
+            <!-- TAB 1: Genel Bilgiler -->
+            <div class="tab-pane fade show active" id="genel" role="tabpanel">
+                <div class="row g-3">
 
-                        <dt class="col-sm-5 text-muted">Marka</dt>
-                        <dd class="col-sm-7" th:text="${stok.marka} ?: '–'"></dd>
+                    <div class="col-lg-6">
+                        <div class="card p-4 h-100">
+                            <h6 class="fw-semibold mb-3">Genel Bilgiler</h6>
+                            <dl class="row mb-0 small">
+                                <dt class="col-sm-5 text-muted">Stok Adı</dt>
+                                <dd class="col-sm-7 fw-semibold" th:text="${stok.stokAdi}"></dd>
 
-                        <dt class="col-sm-5 text-muted">Model Kodu</dt>
-                        <dd class="col-sm-7" th:text="${stok.modelKodu} ?: '–'"></dd>
+                                <dt class="col-sm-5 text-muted">Alternatif Ad</dt>
+                                <dd class="col-sm-7" th:text="${stok.alternatifStokAdi} ?: '–'"></dd>
 
-                        <dt class="col-sm-5 text-muted">Kategori</dt>
-                        <dd class="col-sm-7">
-                            <span th:if="${stok.kategori1}" class="badge bg-light text-dark border"
-                                  th:text="${stok.kategori1}"></span>
-                            <span th:if="${stok.kategori2}" class="badge bg-light text-dark border ms-1"
-                                  th:text="${stok.kategori2}"></span>
-                            <span th:unless="${stok.kategori1 or stok.kategori2}">–</span>
-                        </dd>
+                                <dt class="col-sm-5 text-muted">Kısa İsim</dt>
+                                <dd class="col-sm-7" th:text="${stok.kisaIsmi} ?: '–'"></dd>
 
-                        <dt class="col-sm-5 text-muted">Stok Durumu</dt>
-                        <dd class="col-sm-7">
-                            <span th:if="${stok.stokStatus}" class="badge bg-success-subtle text-success">Aktif</span>
-                            <span th:unless="${stok.stokStatus}" class="badge bg-secondary-subtle text-secondary">Pasif</span>
-                            <span th:if="${stok.bakim}" class="badge bg-warning-subtle text-warning ms-1">Bakım</span>
-                            <span th:if="${stok.rektifiye}" class="badge bg-info-subtle text-info ms-1">Rektifiye</span>
-                        </dd>
-                    </dl>
+                                <dt class="col-sm-5 text-muted">Alt. Kısa İsim</dt>
+                                <dd class="col-sm-7" th:text="${stok.alternatifKisaIsim} ?: '–'"></dd>
+
+                                <dt class="col-sm-5 text-muted">Marka</dt>
+                                <dd class="col-sm-7" th:text="${stok.marka} ?: '–'"></dd>
+
+                                <dt class="col-sm-5 text-muted">Model Kodu</dt>
+                                <dd class="col-sm-7" th:text="${stok.modelKodu} ?: '–'"></dd>
+
+                                <dt class="col-sm-5 text-muted">Kategori</dt>
+                                <dd class="col-sm-7">
+                                    <span th:if="${stok.kategori1}" class="badge bg-light text-dark border"
+                                          th:text="${stok.kategori1}"></span>
+                                    <span th:if="${stok.kategori2}" class="badge bg-light text-dark border ms-1"
+                                          th:text="${stok.kategori2}"></span>
+                                    <span th:unless="${stok.kategori1 or stok.kategori2}">–</span>
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Durum</dt>
+                                <dd class="col-sm-7">
+                                    <span th:if="${stok.stokStatus}" class="badge bg-success-subtle text-success">Aktif</span>
+                                    <span th:unless="${stok.stokStatus}" class="badge bg-secondary-subtle text-secondary">Pasif</span>
+                                    <span th:if="${stok.bakim}" class="badge bg-warning-subtle text-warning ms-1">Bakım</span>
+                                    <span th:if="${stok.rektifiye}" class="badge bg-info-subtle text-info ms-1">Rektifiye</span>
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Web Yayın</dt>
+                                <dd class="col-sm-7">
+                                    <span th:if="${stok.webStatus}" class="badge bg-success-subtle text-success">Yayında</span>
+                                    <span th:unless="${stok.webStatus}" class="badge bg-secondary-subtle text-secondary">Yayında Değil</span>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="card p-4 h-100">
+                            <h6 class="fw-semibold mb-3">Fiyat &amp; Stok</h6>
+                            <dl class="row mb-0 small">
+                                <dt class="col-sm-5 text-muted">Fiyat 1</dt>
+                                <dd class="col-sm-7 fw-semibold"
+                                    th:text="${stok.fiyat1 != null} ? ${#numbers.formatDecimal(stok.fiyat1,1,'POINT',2,'COMMA')} + ' ₺' : '–'"></dd>
+
+                                <dt class="col-sm-5 text-muted">Fiyat 7</dt>
+                                <dd class="col-sm-7"
+                                    th:text="${stok.fiyat7 != null} ? ${#numbers.formatDecimal(stok.fiyat7,1,'POINT',2,'COMMA')} + ' ₺' : '–'"></dd>
+
+                                <dt class="col-sm-5 text-muted">Fiyat 10</dt>
+                                <dd class="col-sm-7"
+                                    th:text="${stok.fiyat10 != null} ? ${#numbers.formatDecimal(stok.fiyat10,1,'POINT',2,'COMMA')} + ' ₺' : '–'"></dd>
+
+                                <dt class="col-sm-5 text-muted">Depo Merkez</dt>
+                                <dd class="col-sm-7">
+                                    <span th:text="${stok.depoMerkez} ?: 0"
+                                          th:classappend="${(stok.depoMerkez ?: 0) > 0} ? 'text-success fw-semibold' : 'text-danger'"></span>
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Depo Toplam</dt>
+                                <dd class="col-sm-7" th:text="${stok.depoToplam} ?: 0"></dd>
+                            </dl>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <!-- Fiyat ve Stok -->
-            <div class="col-lg-6">
-                <div class="card p-4">
-                    <h6 class="fw-semibold mb-3">Fiyat & Stok</h6>
-                    <dl class="row mb-0 small">
-                        <dt class="col-sm-5 text-muted">Fiyat 1</dt>
-                        <dd class="col-sm-7 fw-semibold"
-                            th:text="${stok.fiyat1 != null} ? ${#numbers.formatDecimal(stok.fiyat1,1,'POINT',2,'COMMA')} + ' ₺' : '–'"></dd>
-
-                        <dt class="col-sm-5 text-muted">Fiyat 7</dt>
-                        <dd class="col-sm-7"
-                            th:text="${stok.fiyat7 != null} ? ${#numbers.formatDecimal(stok.fiyat7,1,'POINT',2,'COMMA')} + ' ₺' : '–'"></dd>
-
-                        <dt class="col-sm-5 text-muted">Fiyat 10</dt>
-                        <dd class="col-sm-7"
-                            th:text="${stok.fiyat10 != null} ? ${#numbers.formatDecimal(stok.fiyat10,1,'POINT',2,'COMMA')} + ' ₺' : '–'"></dd>
-
-                        <dt class="col-sm-5 text-muted">Depo Merkez</dt>
-                        <dd class="col-sm-7">
-                            <span th:text="${stok.depoMerkez} ?: 0"
-                                  th:classappend="${(stok.depoMerkez ?: 0) > 0} ? 'text-success fw-semibold' : 'text-danger'"></span>
-                        </dd>
-
-                        <dt class="col-sm-5 text-muted">Depo Toplam</dt>
-                        <dd class="col-sm-7" th:text="${stok.depoToplam} ?: 0"></dd>
-
-                        <dt class="col-sm-5 text-muted">Web Yayın</dt>
-                        <dd class="col-sm-7">
-                            <span th:if="${stok.webStatus}" class="badge bg-success-subtle text-success">Yayında</span>
-                            <span th:unless="${stok.webStatus}" class="badge bg-secondary-subtle text-secondary">Yayında Değil</span>
-                        </dd>
-                    </dl>
+            <!-- TAB 2: Muadil Kodlar -->
+            <div class="tab-pane fade" id="muadil" role="tabpanel">
+                <div class="card">
+                    <div th:if="${#lists.isEmpty(stok.muadilKodlar)}"
+                         class="text-center text-muted py-5">
+                        <i class="bi bi-diagram-2 fs-2 d-block mb-2 opacity-50"></i>
+                        Bu stok için muadil kod bulunmuyor.
+                    </div>
+                    <div th:unless="${#lists.isEmpty(stok.muadilKodlar)}"
+                         class="table-responsive">
+                        <table class="table table-hover table-sm mb-0">
+                            <thead class="table-light">
+                                <tr><th>#</th><th>Muadil Kod</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="mk, stat : ${stok.muadilKodlar}">
+                                    <td class="text-muted small" th:text="${stat.count}"></td>
+                                    <td><code th:text="${mk.muadilKod}"></code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-        </div>
-    </div>
+            <!-- TAB 3: Fotoğraflar -->
+            <div class="tab-pane fade" id="fotograflar" role="tabpanel">
+                <div th:if="${#lists.isEmpty(stok.fotograflar)}"
+                     class="text-center text-muted py-5">
+                    <i class="bi bi-images fs-2 d-block mb-2 opacity-50"></i>
+                    Bu stok için fotoğraf bulunmuyor.
+                </div>
+                <div th:unless="${#lists.isEmpty(stok.fotograflar)}" class="row g-3">
+                    <div th:each="foto : ${stok.fotograflar}"
+                         class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <a th:href="${foto.fotoUrl}" target="_blank" class="d-block">
+                            <img th:src="${foto.fotoUrl}"
+                                 class="img-thumbnail w-100"
+                                 style="object-fit: cover; height: 120px;"
+                                 th:alt="${stok.stokAdi}"
+                                 onerror="this.src='https://placehold.co/200x120?text=Foto'"/>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: Alış Geçmişi -->
+            <div class="tab-pane fade" id="alis" role="tabpanel">
+                <div class="card">
+                    <div th:if="${#lists.isEmpty(stok.alisList)}"
+                         class="text-center text-muted py-5">
+                        <i class="bi bi-box-arrow-in-down fs-2 d-block mb-2 opacity-50"></i>
+                        Alış kaydı bulunmuyor.
+                    </div>
+                    <div th:unless="${#lists.isEmpty(stok.alisList)}" class="table-responsive">
+                        <table class="table table-hover table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th class="text-end">Miktar</th>
+                                    <th class="text-end">Birim Fiyat</th>
+                                    <th class="text-end">Toplam Tutar</th>
+                                    <th>Tedarikçi</th>
+                                    <th>Notlar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="a : ${stok.alisList}">
+                                    <td class="text-nowrap small"
+                                        th:text="${a.alisTarihi != null} ? ${#temporals.format(a.alisTarihi, 'dd.MM.yyyy')} : '–'"></td>
+                                    <td class="text-end fw-semibold" th:text="${a.miktar}"></td>
+                                    <td class="text-end"
+                                        th:text="${a.birimFiyat != null} ? ${#numbers.formatDecimal(a.birimFiyat,1,'POINT',2,'COMMA')} + ' ₺' : '–'"></td>
+                                    <td class="text-end text-success fw-semibold"
+                                        th:text="${a.toplamTutar != null} ? ${#numbers.formatDecimal(a.toplamTutar,1,'POINT',2,'COMMA')} + ' ₺' : '–'"></td>
+                                    <td th:text="${a.tedarikci} ?: '–'"></td>
+                                    <td class="text-muted small" th:text="${a.notlar} ?: ''"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: Çıkış Geçmişi -->
+            <div class="tab-pane fade" id="cikis" role="tabpanel">
+                <div class="card">
+                    <div th:if="${#lists.isEmpty(stok.cikisList)}"
+                         class="text-center text-muted py-5">
+                        <i class="bi bi-box-arrow-up fs-2 d-block mb-2 opacity-50"></i>
+                        Çıkış kaydı bulunmuyor.
+                    </div>
+                    <div th:unless="${#lists.isEmpty(stok.cikisList)}" class="table-responsive">
+                        <table class="table table-hover table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th class="text-end">Miktar</th>
+                                    <th class="text-end">Birim Fiyat</th>
+                                    <th class="text-end">Toplam Tutar</th>
+                                    <th>Müşteri</th>
+                                    <th>Notlar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="c : ${stok.cikisList}">
+                                    <td class="text-nowrap small"
+                                        th:text="${c.cikisTarihi != null} ? ${#temporals.format(c.cikisTarihi, 'dd.MM.yyyy')} : '–'"></td>
+                                    <td class="text-end fw-semibold" th:text="${c.miktar}"></td>
+                                    <td class="text-end"
+                                        th:text="${c.birimFiyat != null} ? ${#numbers.formatDecimal(c.birimFiyat,1,'POINT',2,'COMMA')} + ' ₺' : '–'"></td>
+                                    <td class="text-end text-danger fw-semibold"
+                                        th:text="${c.toplamTutar != null} ? ${#numbers.formatDecimal(c.toplamTutar,1,'POINT',2,'COMMA')} + ' ₺' : '–'"></td>
+                                    <td th:text="${c.musteri} ?: '–'"></td>
+                                    <td class="text-muted small" th:text="${c.notlar} ?: ''"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /tab-content -->
+    </div><!-- /page-body -->
+
 </th:block>
 </body>
 </html>

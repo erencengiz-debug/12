@@ -3,6 +3,7 @@ package com.sase.app.repository;
 import com.sase.app.entity.Stok;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +13,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface StokRepository extends JpaRepository<Stok, UUID> {
+
+    @EntityGraph(attributePaths = {"muadilKodlar", "fotograflar", "alisList", "cikisList"})
+    @Query("SELECT s FROM Stok s WHERE s.id = :id")
+    Optional<Stok> findDetailById(@Param("id") UUID id);
 
     Optional<Stok> findByStokKodu(String stokKodu);
 
