@@ -51,6 +51,8 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(logout -> logout
                         .logoutUrl("/logout")
+                        .invalidateHttpSession(true)   // profile cache dahil tüm session temizlenir
+                        .clearAuthentication(true)
                         .addLogoutHandler((request, response, authentication) -> {
                             // Supabase oturumunu kapat
                             if (authentication instanceof JwtAuthenticationToken jwtAuth) {
