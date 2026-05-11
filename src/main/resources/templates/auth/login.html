@@ -67,7 +67,7 @@
                 <span>Başarıyla çıkış yaptınız.</span>
             </div>
 
-            <form method="post" th:action="@{/login}" novalidate>
+            <form method="post" th:action="@{/login}" novalidate id="loginForm">
                 <div class="mb-3 text-start">
                     <label for="email" class="form-label small fw-medium text-secondary">E-posta Adresi</label>
                     <div class="input-group">
@@ -84,11 +84,27 @@
                                placeholder="••••••••" autocomplete="current-password" required>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-login btn-primary w-100 py-2">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+                <button type="submit" id="loginBtn" class="btn btn-login btn-primary w-100 py-2">
+                    <span id="btnNormal">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+                    </span>
+                    <span id="btnLoading" class="d-none">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Giriş yapılıyor…
+                    </span>
                 </button>
             </form>
         </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            var btn = document.getElementById('loginBtn');
+            if (!this.checkValidity()) return;
+            btn.disabled = true;
+            document.getElementById('btnNormal').classList.add('d-none');
+            document.getElementById('btnLoading').classList.remove('d-none');
+        });
+    </script>
 
         <p class="mt-4 small" style="color:rgba(255,255,255,.4);">
             &copy; 2026 Volkswagen Group · Tüm hakları saklıdır

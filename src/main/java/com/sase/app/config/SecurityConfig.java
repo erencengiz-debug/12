@@ -12,9 +12,19 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.source.DefaultJWKSetCache;
+import com.nimbusds.jose.jwk.source.RemoteJWKSet;
+import com.nimbusds.jose.proc.JWSVerificationKeySelector;
+import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
+import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -78,14 +88,23 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Supabase ES256 JWT'lerini Supabase JWKS endpoint'inden alınan public key ile doğrular
+    // Supabase ES256 JWT'lerini doğrular; JWKS 60 dk cache'lenir (varsayılan 5 dk)
     @Bean
     @Primary
-    public JwtDecoder jwtDecoder(AppProperties props) {
-        String jwksUri = props.supabase().projectUrl() + "/auth/v1/.well-known/jwks.json";
-        return NimbusJwtDecoder.withJwkSetUri(jwksUri)
-                .jwsAlgorithm(SignatureAlgorithm.ES256)
-                .build();
+    public JwtDecoder jwtDecoder(AppProperties props) throws Exception {
+        String issuerUri = props.supabase().projectUrl() + "/auth/v1";
+        String jwksUri = issuerUri + "/.well-known/jwks.json";
+
+        var jwkSetCache = new DefaultJWKSetCache(60, 30, TimeUnit.MINUTES);
+        var jwkSet = new RemoteJWKSet<SecurityContext>(new URL(jwksUri), null, jwkSetCache);
+        var keySelector = new JWSVerificationKeySelector<SecurityContext>(JWSAlgorithm.ES256, jwkSet);
+
+        ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
+        jwtProcessor.setJWSKeySelector(keySelector);
+
+        NimbusJwtDecoder decoder = new NimbusJwtDecoder(jwtProcessor);
+        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuerUri));
+        return decoder;
     }
 
     @Bean
