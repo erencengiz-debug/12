@@ -32,6 +32,8 @@ SUPABASE_DB_PASSWORD=<db-password>
 SUPABASE_PROJECT_URL=https://<project-ref>.supabase.co
 SUPABASE_ANON_KEY=<anon-key>
 SUPABASE_JWKS_URL=https://<project-ref>.supabase.co/auth/v1/.well-known/jwks.json
+# Projede henüz asimetrik imzalara geçilmediyse (Dashboard ▸ Settings ▸ API ▸ JWT Secret / HS256):
+# SUPABASE_JWT_SECRET="<dashboard'daki JWT Secret>"
 ```
 
 ### 2. Uygulamayı Başlat (Dev profili)

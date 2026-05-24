@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  VW masaüstü “Stok - Şase Eşleştirme” — görsel düzen (id / krit value değişmeden).
+-->
+<th:block th:fragment="vwForm">
+<div id="legacyVwShell">
+
+    <h1 class="page-title">Stok - Şase Eşleştirme</h1>
+
+    <!-- BÖLÜM 1 — Üst bilgi -->
+    <div class="section-header">Üst Bilgi</div>
+    <div class="info-grid">
+        <div>
+            <div class="info-row">
+                <span class="info-label">Formül ID</span>
+                <input type="text" id="vwRoId" class="readonly" tabindex="-1" readonly placeholder="–">
+            </div>
+            <div class="info-row">
+                <span class="info-label">Ekleme Zamanı</span>
+                <input type="text" id="vwRoCreated" class="readonly" tabindex="-1" readonly placeholder="–">
+            </div>
+            <div class="info-row">
+                <span class="info-label">Son Çalıştırılma Zamanı</span>
+                <input type="text" id="vwRoExecuted" class="readonly" tabindex="-1" readonly placeholder="–">
+            </div>
+        </div>
+        <div>
+            <div class="info-row">
+                <span class="info-label">Ekleyen Kullanıcı</span>
+                <input type="text" id="vwRoUser" class="readonly" tabindex="-1" readonly placeholder="–">
+            </div>
+            <div class="info-row">
+                <span class="info-label">Güncelleme Zamanı</span>
+                <input type="text" id="vwRoUpdated" class="readonly" tabindex="-1" readonly placeholder="–">
+            </div>
+            <div class="info-row">
+                <span class="info-label">Eşlenik Şase Adedi</span>
+                <input type="text" id="vwRoEsSay" class="readonly" tabindex="-1" readonly placeholder="0">
+            </div>
+        </div>
+    </div>
+    <div class="info-row baslik-row">
+        <span class="info-label">Formül Başlığı <span class="req-star">*</span></span>
+        <input type="text" id="fBaslik" class="baslik-editable" maxlength="500" autocomplete="off" placeholder="Kayıt başlığı">
+    </div>
+    <p class="baslik-hint">Yeni kayıtta başlık zorunludur; kayıtlı düzenlemelerde forma yüklenir.</p>
+
+    <!-- BÖLÜM 2 — Şase numarası -->
+    <div class="section-header">Şase Numarası</div>
+
+    <div class="form-row">
+        <span class="form-label">1. Grup (1.-3. Arası Değerler)</span>
+        <div><input id="vwG1" class="sase-input wide" maxlength="2000"></div>
+        <div class="field-hint">&quot;é&quot; karakteri kullanılabilir. <strong>Ör:</strong> WV1=éé1</div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">2. Grup (4.-6. Arası Değerler)</span>
+        <div><input id="vwG2" class="sase-input wide" maxlength="2000"></div>
+        <div class="field-hint">&quot;é&quot; karakteri kullanılabilir. <strong>Ör:</strong> ZZZ=éZZ</div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">3. Grup (7.-9. Arası Değerler)</span>
+        <div><input id="vwG3" class="sase-input wide vw-grup-virgul" maxlength="2000"></div>
+        <div class="field-hint">
+            Çoklu giriş: virgülle en fazla 5 değer. (<strong>Ör:</strong> 3CZ,2FE)
+            &quot;é&quot; virgüllü parçalarda kullanılamaz. Boş için &quot;ééé&quot;.
+        </div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">4. Grup (10. Değer)</span>
+        <div class="sase-field-inner">
+            <input id="vwG4a" class="sase-input medium" maxlength="500">
+            <input id="vwG4b" class="sase-input medium" maxlength="500">
+            <select id="vwK_g4" class="kriter-select" aria-label="4. grup kriter seç">
+                <th:block th:replace="~{sase/fragments/vw-eslestirme-form :: kritOpts}"></th:block>
+            </select>
+        </div>
+        <div class="field-hint">Boş için é kullanılabilir. <strong>Ör:</strong> A=é</div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">5. Grup (11. Değer)</span>
+        <div><input id="vwG5" class="sase-input wide vw-grup-virgul" maxlength="2000"></div>
+        <div class="field-hint">
+            Çoklu: virgülle en fazla 5 değer. (<strong>Ör:</strong> P,K,F) &quot;é&quot; virgüller arasında yok.
+            Boş için &quot;é&quot;.
+        </div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">6. Grup (12–17 arası)</span>
+        <div class="sase-field-inner">
+            <input id="vwG6a" class="sase-input medium vw-grup6-num" maxlength="10" placeholder="0–999999" inputmode="numeric">
+            <input id="vwG6b" class="sase-input medium vw-grup6-num" maxlength="10" placeholder="0–999999" inputmode="numeric">
+            <select id="vwK_g6" class="kriter-select" aria-label="6. grup kriter seç">
+                <th:block th:replace="~{sase/fragments/vw-eslestirme-form :: kritOpts}"></th:block>
+            </select>
+        </div>
+        <div class="field-hint">Sayı 0 ile 999.999 arası (boş bırakılabilir).</div>
+    </div>
+
+    <!-- BÖLÜM 3 — Araç model -->
+    <div class="section-header">Araç Model Kodları</div>
+
+    <div class="form-row">
+        <span class="form-label">Model</span>
+        <div class="model-field-inner">
+            <div class="model-field-inner-grow"><input id="fModel" class="model-input crit-vw-orange" maxlength="500"></div>
+            <select id="vwK_model" class="kriter-select"><th:block th:replace="~{sase/fragments/vw-eslestirme-form :: kritOpts}"></th:block></select>
+        </div>
+        <div></div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">Üretim Tarihi</span>
+        <div class="model-field-inner">
+            <input type="date" id="fUretBas" class="model-input date-input crit-vw-req" value="2000-01-01">
+            <input type="date" id="fUretBit" class="model-input date-input crit-vw-req" value="2000-01-01">
+            <select id="vwK_uret" class="kriter-select"><th:block th:replace="~{sase/fragments/vw-eslestirme-form :: kritOpts}"></th:block></select>
+        </div>
+        <div></div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">Model Yılı</span>
+        <div class="model-field-inner">
+            <div class="model-field-inner-grow"><input id="fModelYili" class="model-input crit-vw-orange" maxlength="200"></div>
+            <select id="vwK_modelYili" class="kriter-select"><th:block th:replace="~{sase/fragments/vw-eslestirme-form :: kritOpts}"></th:block></select>
+        </div>
+        <div></div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">Satış Tipi</span>
+        <div class="model-field-inner">
+            <div class="model-field-inner-grow"><input id="fSatisTipi" class="model-input crit-vw-orange" maxlength="4000"></div>
+            <select id="vwK_satisTipi" class="kriter-select"><th:block th:replace="~{sase/fragments/vw-eslestirme-form :: kritOpts}"></th:block></select>
+        </div>
+        <div></div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">Motor Kodu</span>
+        <div class="model-motor-inner">
+            <textarea id="fMotorKodu" class="model-textarea crit-vw-orange" maxlength="8000"></textarea>
+            <select id="vwK_motor" class="kriter-select"><th:block th:replace="~{sase/fragments/vw-eslestirme-form :: kritOpts}"></th:block></select>
+        </div>
+        <div></div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">Şanzıman Kodu</span>
+        <div class="model-field-inner">
+            <div class="model-field-inner-grow"><input id="fSanzimanKodu" class="model-input crit-vw-orange" maxlength="800"></div>
+            <select id="vwK_sanziman" class="kriter-select"><th:block th:replace="~{sase/fragments/vw-eslestirme-form :: kritOpts}"></th:block></select>
+        </div>
+        <div></div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">Aks Tahriği Tanımı</span>
+        <div class="model-field-inner">
+            <div class="model-field-inner-grow"><input id="fAks" class="model-input crit-vw-orange" maxlength="800"></div>
+            <select id="vwK_aks" class="kriter-select"><th:block th:replace="~{sase/fragments/vw-eslestirme-form :: kritOpts}"></th:block></select>
+        </div>
+        <div></div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">Donanım</span>
+        <div class="model-field-inner">
+            <div class="model-field-inner-grow"><input id="fEks" class="model-input crit-vw-orange" maxlength="800"></div>
+            <select id="vwK_eks" class="kriter-select"><th:block th:replace="~{sase/fragments/vw-eslestirme-form :: kritOpts}"></th:block></select>
+        </div>
+        <div></div>
+    </div>
+
+    <!-- BÖLÜM 4 — Şase kodları -->
+    <div class="section-header">Şase Kodları</div>
+    <div class="form-row">
+        <span class="form-label">Şase Kodları</span>
+        <div>
+            <div class="sase-kodlari-grid">
+                <input id="vwPin1" class="sase-kod-input" maxlength="200">
+                <input id="vwPin2" class="sase-kod-input" maxlength="200">
+                <input id="vwPin3" class="sase-kod-input" maxlength="200">
+                <input id="vwPin4" class="sase-kod-input" maxlength="200">
+                <input id="vwPin5" class="sase-kod-input" maxlength="200">
+                <input id="vwPin6" class="sase-kod-input" maxlength="200">
+                <input id="vwPin7" class="sase-kod-input" maxlength="200">
+                <input id="vwPin8" class="sase-kod-input" maxlength="200">
+                <input id="vwPin9" class="sase-kod-input solo" maxlength="200">
+            </div>
+        </div>
+        <div></div>
+    </div>
+    <div class="form-row">
+        <span class="form-label">Olmayacak Şase Kodları</span>
+        <div><input id="vwBlacklist" class="olmayacak-input" maxlength="2000"></div>
+        <div></div>
+    </div>
+
+    <!-- BÖLÜM 5 — Stok -->
+    <div class="section-header">Stok Kodları</div>
+    <div class="form-row-stok-wide">
+        <div class="stok-label-block">
+            <strong>Stok Kod Liste</strong><br>
+            Stok kodları arasına virgül koyarak giriniz; her kod iki virgül arasında olmalıdır.<br>
+            <strong>Ör:</strong> ,gdb823,
+        </div>
+        <div>
+            <textarea id="fStokKodListe" class="stok-textarea" rows="10" maxlength="32000"></textarea>
+            <div class="stok-help">Kayıtta kodlar sırayla stok aramasıyla eşlenir.</div>
+        </div>
+    </div>
+    <div class="form-row-stok-wide">
+        <div class="form-label">Değerli Açıklama Girilen Stok Kodları</div>
+        <input id="vwDegerliStokTek" class="aciklama-input" maxlength="100000">
+    </div>
+
+    <!-- BÖLÜM 6 — Butonlar -->
+    <div class="btn-row">
+        <div class="btn-row-left">
+            <button type="button" class="btn-blue" id="btnVwGer">Listeye Dön</button>
+            <button type="button" class="btn-blue" id="btnVwCopy">Kopyala</button>
+        </div>
+        <div class="btn-row-center">
+            <button type="button" class="btn-blue" id="btnVwKaydet">Yeni Kaydı Kaydet</button>
+            <span id="lblVwKayitMod" class="kayit-mod-badge">Yeni kayıt</span>
+        </div>
+        <div class="btn-row-right">
+            <button type="button" class="btn-outline" id="btnVwDegAcikl">Değerli Açıklama Girişi</button>
+            <button type="button" class="btn-run" id="btnVwCalistirHepsi">Çalıştır (Çalıştırılmamış olanları)</button>
+        </div>
+    </div>
+</div>
+</th:block>
+
+<th:block th:fragment="kritOpts">
+    <option value="">Kriter Seç</option>
+    <!-- Görsel referans: Eşittir / Başlangıcı / Sonu ile metin eşleştirmesi -->
+    <option value="ESIT">Eşittir</option>
+    <option value="ESIT_DEGIL">Eşit Değil</option>
+    <option value="BASLANGICI">Başlangıcı</option>
+    <option value="SONU">Sonu</option>
+    <option value="ICERIR">İçerir</option>
+    <option value="ICERMEZ">İçermez</option>
+    <!-- Önceki kayıtlarda kullanılan kodlar; listede görünmez, form yüklenince seçili kalabilir -->
+    <option value="BUYUK" disabled hidden>Büyük</option>
+    <option value="BUYUK_ESIT" disabled hidden>Büyük Eşit</option>
+    <option value="KUCUK" disabled hidden>Küçük</option>
+    <option value="KUCUK_ESIT" disabled hidden>Küçük Eşit</option>
+</th:block>
+
+</body>
+</html>

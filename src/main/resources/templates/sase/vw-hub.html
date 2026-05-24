@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}"
+      lang="tr">
+<head>
+    <title>Stok — Şase No Eşleştirme Listeleri</title>
+    <link rel="stylesheet" th:href="@{/css/vw-formul-liste.css}">
+</head>
+<body>
+<th:block layout:fragment="content">
+    <script th:inline="javascript">
+        window.__API_SASE_BASE = /*[[@{/api/sase}]]*/ '';
+    </script>
+
+    <div class="sase-vw-liste-page">
+    <nav aria-label="breadcrumb" class="mb-2 px-1">
+        <ol class="breadcrumb mb-0 small">
+            <li class="breadcrumb-item"><a th:href="@{/}">Ana sayfa</a></li>
+            <li class="breadcrumb-item active" aria-current="page">VW listeler</li>
+        </ol>
+    </nav>
+
+    <div class="vw-liste-toolbar mb-3 px-3 py-2 rounded-2 border bg-white shadow-sm">
+        <span class="vw-liste-toolbar-title">Stok - Şase No Eşleştirme Listeleri</span>
+    </div>
+
+    <div class="page-body pt-0">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <span class="text-muted small"></span>
+            <a class="btn vw-btn-yeni-eslestirme" th:href="@{/sase/vw/formuls}">
+                <i class="bi bi-plus-lg me-1"></i>Yeni Eşleştirme Gir
+            </a>
+        </div>
+
+        <div class="vw-tablo-wrap mb-4">
+            <table class="table vw-tbl-main mb-0 align-middle" id="tblVwFormuls">
+                <thead>
+                    <tr>
+                        <th class="col-min"></th>
+                        <th class="col-min">Seç</th>
+                        <th class="col-min">Sıra</th>
+                        <th>Ekleyen Kullanıcı</th>
+                        <th>Başlık</th>
+                        <th>Stok Liste</th>
+                        <th>Şase Kod -1</th>
+                        <th>Şase Kod -2</th>
+                        <th>Şase Kod -3</th>
+                        <th>Şase Kod -4</th>
+                        <th>Şase Kod -5</th>
+                        <th>Şase Kod -6</th>
+                        <th>Şase Kod -7</th>
+                        <th>Şase Kod -8</th>
+                        <th>Şase Kod -9</th>
+                        <th>Şase No</th>
+                        <th>Model</th>
+                        <th>Üretim Tarihi Bas</th>
+                        <th>Üretim Tarihi Bit</th>
+                        <th>Model Yılı</th>
+                        <th>Satış Tipi</th>
+                        <th>Motor Kodu</th>
+                        <th>Şanzıman Kodu</th>
+                        <th>Aks Tahriği Tanımı</th>
+                        <th>Donanım</th>
+                        <th>Executed</th>
+                        <th>Execute Date</th>
+                        <th>Eşlenik Şase Adedi</th>
+                        <th class="tcol-long">Değerli Açıklama Stok Kod</th>
+                        <th class="col-min">Sil</th>
+                        <th class="col-min">Temizle</th>
+                    </tr>
+                    <tr class="vw-filter-row">
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <div class="vw-filtre-kutu input-group input-group-sm">
+                                <span class="input-group-text"><i class="bi bi-funnel"></i></span>
+                                <input type="text" class="form-control form-control-sm" data-filter-key="id" autocomplete="off" placeholder="">
+                            </div>
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm mb-1" data-filter-key="ekleyenSel">
+                                <option value="">Hepsi</option>
+                                <option th:each="o : ${ekleyenOptions}" th:value="${o}" th:text="${o}">x</option>
+                            </select>
+                            <div class="vw-filtre-kutu input-group input-group-sm">
+                                <span class="input-group-text"><i class="bi bi-funnel"></i></span>
+                                <input type="text" class="form-control form-control-sm" data-filter-key="ekleyen" autocomplete="off" placeholder="İçerir…">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="vw-filtre-kutu input-group input-group-sm">
+                                <span class="input-group-text"><i class="bi bi-funnel"></i></span>
+                                <input type="text" class="form-control form-control-sm" data-filter-key="baslik" autocomplete="off">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="vw-filtre-kutu input-group input-group-sm">
+                                <span class="input-group-text"><i class="bi bi-funnel"></i></span>
+                                <input type="text" class="form-control form-control-sm" data-filter-key="stokliste" autocomplete="off">
+                            </div>
+                        </td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="sk1"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="sk2"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="sk3"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="sk4"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="sk5"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="sk6"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="sk7"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="sk8"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="sk9"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="saseno"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="model"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-calendar3"></i></span><input type="text" class="form-control form-control-sm" placeholder="yyyy-MM-dd" data-filter-key="uretbas"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-calendar3"></i></span><input type="text" class="form-control form-control-sm" placeholder="yyyy-MM-dd" data-filter-key="uretbit"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="modelYili"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="satisTipi"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="motor"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="sanziman"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="aks"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="donanim"></div></td>
+                        <td>
+                            <select class="form-select form-select-sm" data-filter-key="executed">
+                                <option value="">Hepsi</option>
+                                <option value="yes">Evet</option>
+                                <option value="no">Hayır</option>
+                            </select>
+                        </td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-calendar3"></i></span><input type="text" class="form-control form-control-sm" placeholder="yyyy-MM-dd" data-filter-key="execdate"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="eslenik"></div></td>
+                        <td><div class="vw-filtre-kutu input-group input-group-sm"><span class="input-group-text"><i class="bi bi-funnel"></i></span><input type="text" class="form-control form-control-sm" data-filter-key="degerli"></div></td>
+                        <td></td>
+                        <td>
+                            <button type="button" class="btn btn-link vw-filtre-temizle-link p-0 border-0" id="btnVwListeFiltreTemizle">
+                                Filtreyi Temizle
+                            </button>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${vwRows == null || vwRows.isEmpty()}">
+                        <td colspan="31" class="text-center text-muted py-4">
+                            Liste boş. <a th:href="@{/sase/vw/formuls}">Yeni eşleştirme gir</a> — kayıtlar burada görünecektir.
+                        </td>
+                    </tr>
+                    <tr th:each="row, rowStat : ${vwRows}"
+                        th:data-row-id="${row.id()}"
+                        th:data-executed="${
+                             row.executed() == null ? ''
+                             : (row.executed() ? 'true' : 'false')
+                        }"
+                        th:classappend="${!#bools.isTrue(row.executed())} ? ' vw-row-calistirilmamis' : ''">
+                        <td></td>
+                        <td>
+                            <a class="vw-btn-sec" th:href="@{/sase/vw/formuls(vfUuid=${row.id()})}">Seç</a>
+                        </td>
+                        <td class="tcol-id text-center fw-semibold" th:text="${rowStat.count}">1</td>
+                        <td class="tcol-ekleyen" th:text="${row.ekleyenKullanici()} ?: '–'"></td>
+                        <td class="tcol-baslik vw-tcol-ellipsis" th:title="${row.baslik()}" th:text="${row.baslik()} ?: '–'"></td>
+                        <td class="tcol-stokliste vw-tcol-ellipsis font-monospace" th:title="${row.stokListe()}" th:text="${row.stokListe()} ?: '–'"></td>
+                        <td class="tcol-sk1" th:text="${row.saseKod1()} ?: '–'"></td>
+                        <td class="tcol-sk2" th:text="${row.saseKod2()} ?: '–'"></td>
+                        <td class="tcol-sk3" th:text="${row.saseKod3()} ?: '–'"></td>
+                        <td class="tcol-sk4" th:text="${row.saseKod4()} ?: '–'"></td>
+                        <td class="tcol-sk5" th:text="${row.saseKod5()} ?: '–'"></td>
+                        <td class="tcol-sk6" th:text="${row.saseKod6()} ?: '–'"></td>
+                        <td class="tcol-sk7" th:text="${row.saseKod7()} ?: '–'"></td>
+                        <td class="tcol-sk8" th:text="${row.saseKod8()} ?: '–'"></td>
+                        <td class="tcol-sk9" th:text="${row.saseKod9()} ?: '–'"></td>
+                        <td class="tcol-saseno" th:text="${row.saseNo()} ?: '–'"></td>
+                        <td class="tcol-model" th:text="${row.model()} ?: '–'"></td>
+                        <td class="tcol-uretbas" th:text="${row.uretimTarihiBas() != null} ? ${#temporals.format(row.uretimTarihiBas(), 'yyyy-MM-dd')} : '–'"></td>
+                        <td class="tcol-uretbit" th:text="${row.uretimTarihiBit() != null} ? ${#temporals.format(row.uretimTarihiBit(), 'yyyy-MM-dd')} : '–'"></td>
+                        <td class="tcol-modelYili" th:text="${row.modelYili()} ?: '–'"></td>
+                        <td class="tcol-satisTipi" th:text="${row.satisTipi()} ?: '–'"></td>
+                        <td class="tcol-motor tcol-mot" th:title="${row.motorKodu()}" th:text="${row.motorKodu()} ?: '–'"></td>
+                        <td class="tcol-sanziman" th:text="${row.sanzimanKodu()} ?: '–'"></td>
+                        <td class="tcol-aks" th:text="${row.aksTahrigiTanimi()} ?: '–'"></td>
+                        <td class="tcol-donanim" th:text="${row.donanim()} ?: '–'"></td>
+                        <td class="tcol-exec vw-tcol-exec">
+                            <span th:if="${row.executed() == null}" class="text-muted">–</span>
+                            <span th:if="${row.executed() != null and row.executed()}" class="text-success">Evet</span>
+                            <span th:if="${row.executed() != null and !row.executed()}" class="text-secondary">Hayır</span>
+                        </td>
+                        <td class="tcol-execdate" th:text="${row.executeDate() != null} ? ${#temporals.format(row.executeDate(), 'yyyy-MM-dd')} : '–'"></td>
+                        <td class="tcol-eslenik" th:text="${row.eslenikSaseAdedi() != null} ? ${row.eslenikSaseAdedi()} : '–'"></td>
+                        <td class="tcol-degerli vw-tcol-ellipsis-long tcol-long" th:title="${row.degerliAciklamaStokKods()}" th:text="${row.degerliAciklamaStokKods()} ?: '–'"></td>
+                        <td>
+                            <button type="button" class="vw-link-sil vw-btn-sil btn p-0 border-0 bg-transparent" th:data-id="${row.id()}">Sil</button>
+                        </td>
+                        <td>
+                            <button type="button" class="vw-link-temizle vw-btn-satir-temizle btn p-0 border-0 bg-transparent" th:data-id="${row.id()}">Temizle</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end mb-5">
+            <a class="btn vw-btn-yeni-eslestirme" th:href="@{/sase/vw/formuls}">
+                <i class="bi bi-plus-lg me-1"></i>Yeni Eşleştirme Gir
+            </a>
+        </div>
+    </div>
+    </div>
+
+    <script th:src="@{/js/vw-formul-liste.js}"></script>
+</th:block>
+</body>
+</html>

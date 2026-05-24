@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ public class AuthController {
     @GetMapping("/login")
     public String loginPage(
             @RequestParam(required = false) String error,
+            @RequestParam(required = false) String service,
             Authentication authentication,
             Model model
     ) {
@@ -33,6 +35,11 @@ public class AuthController {
         }
         if (error != null) {
             model.addAttribute("errorMsg", "E-posta veya şifre hatalı. Lütfen tekrar deneyin.");
+        }
+        if ("1".equals(service)) {
+            model.addAttribute("serviceErrorMsg",
+                    "Kimlik doğrulama sunucusuna bağlanılamıyor. İnternet veya güvenlik duvarı bağlantınızı "
+                            + "kontrol edin ve bir süre sonra tekrar deneyin.");
         }
         return "auth/login";
     }
@@ -49,9 +56,12 @@ public class AuthController {
             setTokenCookie(response, auth.accessToken(), maxAge);
             log.info("Kullanıcı giriş yaptı: {}", email);
             return "redirect:/";
-        } catch (Exception e) {
+        } catch (BadCredentialsException e) {
             log.warn("Giriş başarısız - {}: {}", email, e.getMessage());
             return "redirect:/login?error";
+        } catch (Exception e) {
+            log.warn("Giriş başarısız (bağlantı veya sistem) - {}: {}", email, e.getMessage(), e);
+            return "redirect:/login?service=1";
         }
     }
 

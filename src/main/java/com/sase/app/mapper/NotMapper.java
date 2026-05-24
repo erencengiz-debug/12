@@ -7,7 +7,7 @@ import org.mapstruct.MappingConstants;
 
 import java.util.List;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = TimeConverters.class)
 public interface NotMapper {
 
     NotDto toDto(Not not);

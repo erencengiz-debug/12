@@ -3,12 +3,15 @@ package com.sase.app.service;
 import com.sase.app.dto.auth.SupabaseAuthResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.time.Duration;
 import java.util.Map;
 
 @Slf4j
@@ -16,7 +19,35 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private static final Duration USER_ENDPOINT_TIMEOUT = Duration.ofSeconds(20);
+
     private final WebClient supabaseWebClient;
+
+    /**
+     * Access token'ı Supabase Auth ile doğrular (GET /auth/v1/user).
+     * Yerel JWKS/HS256 doğrulaması mümkün olmadığında (veya env'de JWT secret yokken) oturum böyle onaylanır.
+     */
+    public boolean isAccessTokenAcceptedByAuthServer(String accessToken) {
+        try {
+            ResponseEntity<Map> entity = supabaseWebClient.get()
+                    .uri("/auth/v1/user")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .retrieve()
+                    .toEntity(Map.class)
+                    .block(USER_ENDPOINT_TIMEOUT);
+            return entity != null && entity.getStatusCode().is2xxSuccessful();
+        } catch (WebClientResponseException e) {
+            int code = e.getStatusCode().value();
+            if (code == HttpStatus.UNAUTHORIZED.value() || code == HttpStatus.FORBIDDEN.value()) {
+                return false;
+            }
+            log.debug("Supabase /user doğrulaması HTTP [{}]: {}", code, e.getResponseBodyAsString());
+            return false;
+        } catch (Exception e) {
+            log.debug("Supabase /user doğrulaması başarısız: {}", e.getMessage());
+            return false;
+        }
+    }
 
     public SupabaseAuthResponse signIn(String email, String password) {
         try {

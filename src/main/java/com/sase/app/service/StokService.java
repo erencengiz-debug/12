@@ -1,5 +1,6 @@
 package com.sase.app.service;
 
+import com.sase.app.dto.stok.StokOzetDto;
 import com.sase.app.entity.Stok;
 import com.sase.app.repository.StokRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -19,18 +21,21 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class StokService {
 
-    private static final int PAGE_SIZE = 50;
+    private static final int STOK_POPUP_SEARCH_CAP = 100;
 
     private final StokRepository stokRepository;
 
-    public Page<Stok> listele(String q, int page) {
-        if (q != null && !q.isBlank()) {
-            // search sorgusu ORDER BY içermiyor → sort pageable'a verilir
-            Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.ASC, "stokAdi"));
-            return stokRepository.search(q.trim(), pageable);
+    public List<StokOzetDto> stokOzetiAra(String aramaMetni, int limit) {
+        String q = aramaMetni == null ? "" : aramaMetni.trim();
+        if (q.length() < 1) {
+            return List.of();
         }
-        // findAllPaged sorgusu zaten ORDER BY stokAdi içeriyor → sort verilmez
-        return stokRepository.findAllPaged(PageRequest.of(page, PAGE_SIZE));
+        int lim = Math.max(1, Math.min(limit, STOK_POPUP_SEARCH_CAP));
+        Pageable pg = PageRequest.of(0, lim, Sort.by(Sort.Direction.ASC, "stokAdi"));
+        Page<Stok> page = stokRepository.search(q, pg);
+        return page.getContent().stream()
+                .map(s -> new StokOzetDto(s.getId(), s.getStokKodu(), s.getStokAdi()))
+                .toList();
     }
 
     public Stok idIleGetir(UUID id) {

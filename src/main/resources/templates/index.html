@@ -4,106 +4,97 @@
       layout:decorate="~{layout/base}"
       lang="tr">
 <head>
-    <title>Dashboard</title>
+    <title>Anasayfa</title>
+    <th:block layout:fragment="head-extra">
+        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/css/dashboard-calendar.css}">
+    </th:block>
 </head>
 <body>
 <th:block layout:fragment="content">
 
-    <div class="page-header">
-        <h1><i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard</h1>
-        <p class="text-muted mb-0">Hoş geldiniz,
-            <strong th:text="${currentUser != null} ? ${currentUser.displayName()} : (${email} ?: 'Kullanıcı')"></strong>
-        </p>
-    </div>
+    <div class="page-body pt-2 pb-4 px-2 px-md-3">
 
-    <div class="page-body">
+        <div class="home-calendar-shell mx-auto">
+            <!-- Üst: kullanıcı -->
+            <div class="home-cal-userrow">
+                <div class="user-line">
+                    <th:block th:if="${currentUser != null}"
+                              th:with="ku=${currentUser.kullaniciAdi()},
+                                       line=${ku != null and !#strings.isEmpty(ku) ? currentUser.displayName() + ' - ' + ku : currentUser.displayName()}">
+                        <span th:text="${line}">Kullanıcı</span>
+                    </th:block>
+                    <span th:if="${currentUser == null}"
+                          th:text="${email != null and !#strings.isEmpty(email) ? email : 'Kullanıcı'}">Kullanıcı</span>
+                </div>
+            </div>
 
-        <!-- İstatistik Kartları -->
-        <div class="row g-3 mb-4">
-            <div class="col-sm-6 col-xl-3">
-                <div class="card p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon" style="background:#e8f0fe; color:#1a3a5c;">
-                            <i class="bi bi-archive"></i>
-                        </div>
-                        <div>
-                            <div class="text-muted small">Toplam Stok</div>
-                            <div class="fw-bold fs-5" th:text="${stokSayisi} ?: '–'"></div>
-                        </div>
-                    </div>
+            <div class="home-cal-tabbar">
+                <div class="home-cal-tab">Takvim</div>
+            </div>
+
+            <div class="home-cal-toolbar">
+                <div class="home-cal-toolbar-left">
+                    <button type="button" class="home-cal-circle-btn" id="homeCalPrev" title="Önceki"
+                            aria-label="Önceki">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button type="button" class="home-cal-btn-today" id="homeCalToday">Bugün</button>
+                    <button type="button" class="home-cal-circle-btn" id="homeCalNext" title="Sonraki"
+                            aria-label="Sonraki">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="home-cal-toolbar-center">
+                    <h2 class="home-cal-toolbar-title" id="homeCalTitle">Takvim</h2>
+                </div>
+                <div class="home-cal-toolbar-right">
+                    <button type="button" class="home-cal-view-btn" data-cal-view="timeGridDay">Gün</button>
+                    <button type="button" class="home-cal-view-btn" data-cal-view="timeGridWorkWeek">İş Haftası</button>
+                    <button type="button" class="home-cal-view-btn" data-cal-view="timeGridWeek">Hafta</button>
+                    <button type="button" class="home-cal-view-btn" data-cal-view="dayGridMonth">Ay</button>
+                    <button type="button" class="home-cal-view-btn" data-cal-view="listWeek">Zaman Çizelgesi</button>
                 </div>
             </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon" style="background:#fce8e6; color:#c5221f;">
-                            <i class="bi bi-diagram-3"></i>
-                        </div>
-                        <div>
-                            <div class="text-muted small">Şase Eşleştirme</div>
-                            <div class="fw-bold fs-5" th:text="${saseSayisi} ?: '–'"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon" style="background:#e6f4ea; color:#137333;">
-                            <i class="bi bi-journal-text"></i>
-                        </div>
-                        <div>
-                            <div class="text-muted small">Notlar</div>
-                            <div class="fw-bold fs-5" th:text="${notSayisi} ?: '–'"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon" style="background:#fef7e0; color:#b45309;">
-                            <i class="bi bi-check2-circle"></i>
-                        </div>
-                        <div>
-                            <div class="text-muted small">Tamamlanan Eşleştirme</div>
-                            <div class="fw-bold fs-5" th:text="${tamamlananSayisi} ?: '–'"></div>
-                        </div>
-                    </div>
-                </div>
+
+            <div class="home-cal-stage position-relative">
+                <button type="button" class="home-cal-arrow-fab prev" id="homeCalFabPrev" aria-label="Önceki">
+                    <i class="bi bi-chevron-left fs-5"></i>
+                </button>
+                <div id="dashCalendar"></div>
+                <button type="button" class="home-cal-arrow-fab next" id="homeCalFabNext" aria-label="Sonraki">
+                    <i class="bi bi-chevron-right fs-5"></i>
+                </button>
             </div>
         </div>
-
-        <!-- Hızlı Erişim -->
-        <div class="row g-3">
-            <div class="col-md-6">
-                <div class="card p-4">
-                    <h6 class="fw-semibold mb-3"><i class="bi bi-diagram-3 me-2 text-danger"></i>Şase Eşleştirme</h6>
-                    <p class="text-muted small mb-3">
-                        Şase kodlarına göre stokları eşleştirin, sonuçları görüntüleyin.
-                    </p>
-                    <a th:href="@{/sase/yeni}" class="btn btn-sm btn-primary me-2">
-                        <i class="bi bi-plus-lg me-1"></i>Yeni Eşleştirme
-                    </a>
-                    <a th:href="@{/sase}" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-list me-1"></i>Tümünü Gör
-                    </a>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card p-4">
-                    <h6 class="fw-semibold mb-3"><i class="bi bi-archive me-2 text-primary"></i>Stok</h6>
-                    <p class="text-muted small mb-3">
-                        Stok listesini görüntüleyin, arama yapın ve detayları inceleyin.
-                    </p>
-                    <a th:href="@{/stok}" class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-search me-1"></i>Stok Ara
-                    </a>
-                </div>
-            </div>
-        </div>
-
     </div>
+
+    <!-- Sabit Not paneli -->
+    <div id="homeNoteDock" class="home-note-dock">
+        <div id="homeNotePanel" class="home-note-panel">
+            <div class="home-note-panel-header">
+                <span>Not</span>
+                <button type="button" id="homeNoteClose" class="home-note-close" aria-label="Kapat">&times;</button>
+            </div>
+            <textarea id="homeNoteTextarea"
+                      class="home-note-textarea"
+                      placeholder="Notlarınızı buraya yazın; tarayıcıda saklanır."></textarea>
+            <div class="home-note-hint">Bu not sadece bu tarayıcıda, sizin oturumunuza bağlı olarak saklanır.</div>
+        </div>
+        <button type="button" id="homeNoteFab" class="home-note-fab">Not&nbsp;📝</button>
+    </div>
+
+</th:block>
+
+<th:block layout:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales-all.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.__DASH_USER_ID = /*[[${userId != null ? userId : ''}]]*/ '';
+        /*]]>*/
+    </script>
+    <script defer th:src="@{/js/dashboard-calendar.js}"></script>
 </th:block>
 </body>
 </html>

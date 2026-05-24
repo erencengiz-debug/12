@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -38,7 +38,7 @@ public class StokAlis extends CreatedAtEntity {
     private String tedarikci;
 
     @Column(name = "alis_tarihi")
-    private OffsetDateTime alisTarihi;
+    private LocalDateTime alisTarihi;
 
     @Column(name = "notlar", columnDefinition = "text")
     private String notlar;

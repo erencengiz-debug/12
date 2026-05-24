@@ -3,7 +3,7 @@ package com.sase.app.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -31,5 +31,5 @@ public class Not extends BaseEntity {
     private String aciklama;
 
     @Column(name = "tarih", nullable = false)
-    private OffsetDateTime tarih;
+    private LocalDateTime tarih;
 }

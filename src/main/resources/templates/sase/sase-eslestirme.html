@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}"
+      lang="tr">
+<head>
+    <title th:text="|Şase formül (${marka})|">Şase formül</title>
+    <link th:if="${#strings.equals(marka,'VW')}" rel="stylesheet" th:href="@{/css/sase-vw-form.css}">
+    <style>
+        #saseFormBody .exec-row-done { background: #e8f5e9 !important; }
+        #saseFormBody .exec-row-pending { background: #fffde7 !important; }
+        #tblSase thead.table-light th { font-size: .78rem; white-space: nowrap; vertical-align: top; }
+        #tblSase .filter-head input { font-size: .74rem; }
+    </style>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div id="toastStack" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1090;"></div>
+
+    <div id="form-anchor"></div>
+
+    <!-- VW: masaüstü legacy yerleşim -->
+    <th:block th:if="${#strings.equals(marka,'VW')}">
+        <nav aria-label="breadcrumb" class="mb-2 px-1">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a th:href="@{/}">Ana sayfa</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/sase/vw}">Şase VW</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Formüller</li>
+            </ol>
+        </nav>
+        <div class="legacy-vw-tbl-note border-bottom pb-2 mb-3 px-1">
+            <small class="text-muted">Liste bu sayfanın altındadır; satıra düzenle ile formu yüklersiniz.</small>
+        </div>
+        <div th:replace="~{sase/fragments/vw-eslestirme-form :: vwForm}"></div>
+    </th:block>
+
+    <!-- Diğer markalar -->
+    <th:block th:unless="${#strings.equals(marka,'VW')}">
+    <div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
+        <div>
+            <h1 class="mb-1">
+                <i class="bi bi-diagram-3 me-2 text-primary"></i>
+                Şase Eşleştirme Formülleri · <span th:text="${marka}">MARKA</span>
+            </h1>
+            <p class="text-muted mb-0 small">Üst panel formu AJAX ile kaydedilir; liste alttan güncellenir.</p>
+        </div>
+    </div>
+
+    <!-- 1 Genel Bilgiler -->
+    <div class="card mb-3">
+        <div class="card-header py-2 fw-semibold"><i class="bi bi-card-text me-1"></i>Genel Bilgiler</div>
+        <div class="card-body row g-3">
+            <div class="col-md-8">
+                <label class="form-label">Formül Başlığı <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="fBaslik" maxlength="500"
+                       placeholder="Örn: VW Amarok V6 – belirli stok bağlantısı">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Marka (salt okunur)</label>
+                <input type="text" class="form-control-plaintext fw-bold ps-2"
+                       tabindex="-1" readonly th:value="${marka}">
+            </div>
+        </div>
+    </div>
+
+    <!-- 2 Şase grupları -->
+    <div class="card mb-3">
+        <div class="card-header py-2 fw-semibold"><i class="bi bi-hash me-1"></i>Şase Kod Grupları</div>
+        <div class="card-body">
+            <div class="row g-3" id="sase-grup-rows">
+                <div class="col-md-6" th:each="i : ${#numbers.sequence(1, 9)}">
+                    <label class="form-label mb-1 d-flex justify-content-between align-items-center small">
+                        <span th:text="'Grup ' + ${i}">Grup 1</span>
+                        <select class="form-select form-select-sm" style="width:9rem;"
+                                disabled data-bs-toggle="tooltip" title="Koşul tipi yakında seçilebilir">
+                            <option>Kriter •</option>
+                        </select>
+                    </label>
+                    <textarea class="form-control form-control-sm sase-inline" rows="2"
+                              th:id="'fSaseKod' + ${i}"
+                              maxlength="2000"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3 Araç kriterleri (VW / FIAT görünüm) -->
+    <div id="kartAracStandart"
+         class="card mb-3"
+         th:classappend="${(#strings.equals(marka,'PSA') or #strings.equals(marka,'OPEL'))} ? ' d-none' : ''">
+        <div class="card-header py-2 fw-semibold"><i class="bi bi-car-front me-1"></i>Araç Kriterleri</div>
+        <div class="card-body row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Model</label>
+                <input type="text" class="form-control form-control-sm" id="fModel" maxlength="500">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Üretim tarihi başlangıç</label>
+                <input type="date" class="form-control form-control-sm" id="fUretBas">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Üretim tarihi bitiş</label>
+                <input type="date" class="form-control form-control-sm" id="fUretBit">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Model yılı</label>
+                <input type="text" class="form-control form-control-sm" id="fModelYili" maxlength="200">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Satış tipi</label>
+                <input type="text" class="form-control form-control-sm" id="fSatisTipi" maxlength="4000">
+            </div>
+            <div class="col-md-5">
+                <label class="form-label">Motor kodu</label>
+                <input type="text" class="form-control form-control-sm" id="fMotorKodu" maxlength="8000">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Şanzıman kodu</label>
+                <input type="text" class="form-control form-control-sm" id="fSanzimanKodu" maxlength="800">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Aks tahrik tanımı</label>
+                <input type="text" class="form-control form-control-sm" id="fAks" maxlength="800">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Ekstra donanım</label>
+                <input type="text" class="form-control form-control-sm" id="fEks" maxlength="800">
+            </div>
+        </div>
+    </div>
+
+    <!-- PSA / OPEL araç blokları -->
+    <div id="kartAracPsaOpel"
+         class="card mb-3"
+         th:classappend="${(#strings.equals(marka,'PSA') or #strings.equals(marka,'OPEL'))} ? '' : ' d-none'">
+        <div class="card-header py-2 fw-semibold"><i class="bi bi-car-front-fill me-1"></i>Araç • PSA/OPEL Alanları</div>
+        <div class="card-body row g-3">
+            <div class="col-lg-12 text-muted small">
+                Garanti aralığı aşağıdaki tarihlerle <strong>Üretim tarihi</strong> kolonlarına yazılır; OPR için model yılı alanı kullanılabilir.
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Ürün gamı (eks_donanim)</label>
+                <input type="text" class="form-control form-control-sm" id="fPsaUrunGam" maxlength="800">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">OPR No → model_yili</label>
+                <input type="text" class="form-control form-control-sm" id="fPsaOpr" maxlength="200">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Aktarma sistemleri → aks</label>
+                <input type="text" class="form-control form-control-sm" id="fPsaAktarma" maxlength="800">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">OPR başlangıç (1–5)</label>
+                <input type="text" inputmode="numeric" class="form-control form-control-sm" id="fPsaOprBas" maxlength="5">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">OPR bitiş (1–5)</label>
+                <input type="text" inputmode="numeric" class="form-control form-control-sm" id="fPsaOprBit" maxlength="5">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Garanti tarihi başlangıç</label>
+                <input type="date" class="form-control form-control-sm" id="fPsaGarantBas">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Garanti tarihi bitiş</label>
+                <input type="date" class="form-control form-control-sm" id="fPsaGarantBit">
+            </div>
+        </div>
+    </div>
+
+    <!-- Şase filtresi blacklist -->
+    <div class="card mb-3">
+        <div class="card-header py-2 fw-semibold"><i class="bi bi-funnel me-1"></i>Şase Kod / Stok İzin &amp; Açıklama</div>
+        <div class="card-body row g-3">
+            <div class="col-12">
+                <label class="form-label small">Karaliste / değerli açıklama (stok kodları metin olarak)</label>
+                <textarea class="form-control form-control-sm" id="fDegerliAciklama" rows="4" maxlength="100000"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stok kodları -->
+    <div class="card mb-3">
+        <div class="card-header py-2 fw-semibold"><i class="bi bi-collection me-1"></i>Stok Kodları</div>
+        <div class="card-body row g-2">
+            <div class="col-auto">
+                <button type="button" class="btn btn-sm btn-outline-primary" id="btnStokModal" data-bs-toggle="modal"
+                        data-bs-target="#stokModal"><i class="bi bi-search me-1"></i>Stok Ara
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="btnStokListeTemiz">
+                    Liste temizle
+                </button>
+            </div>
+            <div class="col-12">
+                <label class="form-label small mb-1">Seçilen stok kodları (UUID’ler arka planda tutulur)</label>
+                <textarea class="form-control form-control-sm" id="fStokKodListe" rows="3" placeholder="Örn seçim yapınca kodlar yazılır" readonly tabindex="-1"></textarea>
+                <small class="text-muted">Birden fazla seçim yapılabilir; kayıtta <code>stokListe[]</code> olarak gider.</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Açıklama yok ayırta - zaten degerli kullanılıyor -->
+
+    <div class="d-flex flex-wrap gap-2 mb-4 pb-3 border-bottom">
+        <button type="button" class="btn btn-primary" id="btnKaydet"><i class="bi bi-save me-1"></i>Kaydet</button>
+        <button type="button" class="btn btn-success" id="btnCalistir"><i class="bi bi-play-fill me-1"></i>Çalıştır (form)</button>
+        <button type="button" class="btn btn-outline-secondary" id="btnFormTemiz"><i class="bi bi-arrow-counterclockwise"></i>
+            Formu Temizle
+        </button>
+        <button type="button" class="btn btn-warning" id="btnCalistirHepsi"><i class="bi bi-lightning-fill me-1"></i>Tüm Bekleyeni Çalıştır</button>
+        <a th:href="@{/sase}" class="btn btn-link">İptal / Listeye</a>
+    </div>
+
+    </th:block>
+
+    <!-- Tablo -->
+    <div class="card">
+        <div class="card-header py-2 d-flex flex-wrap align-items-center gap-2">
+            <span class="fw-semibold"><i class="bi bi-table me-1"></i>Mevcut formüller</span>
+            <div class="ms-auto d-flex flex-wrap gap-2 align-items-center">
+                <label class="small mb-0">Sayfa boyutu</label>
+                <select class="form-select form-select-sm" style="width:5rem;" id="selSayfaBoyutu">
+                    <option>25</option>
+                    <option>50</option>
+                    <option>100</option>
+                </select>
+                <small class="text-muted" id="lblSayfaBilgi"></small>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm table-striped mb-0" id="tblSase">
+                <thead class="table-light">
+                <tr>
+                    <th>Başlık<input class="form-control mt-1 filter-inp" data-f="baslik" placeholder="Filtre"></th>
+                    <th>Kullanıcı<br>
+                        <input type="text" class="form-control mt-1" id="filtKullanicilokal" placeholder="Sayfa içi">
+                    </th>
+                    <th>Stok özeti</th>
+                    <th>S1<input class="form-control mt-1 filter-inp sase-mini" data-f="saseKod1"></th>
+                    <th>S2<input class="form-control mt-1 filter-inp sase-mini" data-f="saseKod2"></th>
+                    <th>S3<input class="form-control mt-1 filter-inp sase-mini" data-f="saseKod3"></th>
+                    <th>S4<input class="form-control mt-1 filter-inp sase-mini" data-f="saseKod4"></th>
+                    <th>S5<input class="form-control mt-1 filter-inp sase-mini" data-f="saseKod5"></th>
+                    <th>S6<input class="form-control mt-1 filter-inp sase-mini" data-f="saseKod6"></th>
+                    <th>Exec.<select class="form-select mt-1 filter-select" data-f="executed"><option value="">Hepsi</option><option value="true">Evet</option><option value="false">Hayır</option></select></th>
+                    <th style="min-width:6rem;"></th>
+                </tr>
+                </thead>
+                <tbody id="tblSaseBody"><tr><td colspan="12" class="text-center py-4 text-muted">Yükleniyor…</td></tr></tbody>
+            </table>
+        </div>
+        <div class="card-footer d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <small class="text-muted">Üst başlıklardaki filtreler isteği sunucuya taşır; kullanıcı hücresindeki ara yalnızca bu sayfadaki satırları daraltır.</small>
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-secondary" id="btnPrevSayfa">&laquo;</button>
+                <span class="btn btn-outline-secondary disabled" id="lblSayfaNo">1 / 1</span>
+                <button type="button" class="btn btn-outline-secondary" id="btnNextSayfa">&raquo;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stok Modal -->
+    <div class="modal fade" id="stokModal" tabindex="-1" aria-labelledby="stokModalLabel">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title" id="stokModalLabel">Stok ara</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-2">
+                        <input type="search" class="form-control form-control-sm" id="inpStokAra">
+                        <button class="btn btn-sm btn-primary" type="button" id="btnStokSearchGo">Bul</button>
+                    </div>
+                    <table class="table table-sm align-middle mb-0">
+                        <thead><tr><th>Kod</th><th>Ad</th><th></th></tr></thead>
+                        <tbody id="stokBulBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.__PAGE_MARKA = /*[[${marka}]]*/ 'VW';
+        window.__SASE_LEGACY_VW = /*[[${#strings.equals(marka,'VW')}]]*/ false;
+        /*]]>*/
+    </script>
+</th:block>
+
+<th:block layout:fragment="scripts">
+    <script th:src="@{/js/sase-eslestirme.js}"></script>
+    <script th:if="${#strings.equals(marka,'VW')}" th:src="@{/js/vw-formul-loader.js}"></script>
+</th:block>
+</body>
+</html>

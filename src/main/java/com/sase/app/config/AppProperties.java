@@ -8,9 +8,11 @@ public record AppProperties(
         CookieProps cookie
 ) {
 
+    /** {@code jwtSecret} — Supabase “Legacy JWT Secret” ile imzalanan HS256 token’lar için (opsiyonel). */
     public record SupabaseProps(
             String projectUrl,
-            String anonKey
+            String anonKey,
+            String jwtSecret
     ) {}
 
     public record CookieProps(

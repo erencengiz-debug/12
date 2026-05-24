@@ -1,0 +1,626 @@
+/**
+ * /stok — soft off-white ERP form + grid
+ * Tokens: bg, surface, surface2, border, text1–3, accent
+ */
+
+:root {
+    --bg: #f5f4ef;
+    --surface: #fdfcf8;
+    --surface2: #f0eee8;
+    --border: rgba(60, 52, 40, 0.1);
+    --border-input: rgba(60, 52, 40, 0.15);
+    --text1: #2c2c2a;
+    --text2: #5f5e5a;
+    --text3: #888780;
+    --accent: #185fa5;
+    --accent-hover: #0c447c;
+    --accent-ring: rgba(24, 95, 165, 0.18);
+    --accent-bg: #e6f1fb;
+    --ease: ease;
+    --dur: 150ms;
+    --radius-card: 10px;
+    --radius-ctl: 6px;
+}
+
+.page-stok {
+    box-sizing: border-box;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--text1);
+    background: var(--bg);
+    padding: 18px 20px 28px;
+    min-height: calc(100vh - 48px);
+}
+
+.page-stok *,
+.page-stok *::before,
+.page-stok *::after {
+    box-sizing: border-box;
+}
+
+/* ── BÖLÜM 1 ── */
+.stok-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.stok-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-left: 3px solid rgba(24, 95, 165, 0.28);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+}
+
+.stok-card-head {
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.42px;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--border);
+}
+
+.stok-card-body {
+    padding: 16px 14px 18px;
+}
+
+.stok-field-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.stok-field-row:last-child {
+    margin-bottom: 0;
+}
+
+.stok-field-label {
+    flex: 0 0 140px;
+    padding-top: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.38px;
+    text-transform: uppercase;
+    color: var(--text2);
+}
+
+.stok-field-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.stok-field-help {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.stok-field-help-line {
+    display: block;
+    font-size: 11px;
+    color: var(--text3);
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.45;
+}
+
+.stok-control {
+    width: 100%;
+    height: 34px;
+    padding: 0 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text1);
+    background: var(--surface);
+    border: 0.5px solid var(--border-input);
+    border-radius: var(--radius-ctl);
+    outline: none;
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+        background-color var(--dur) var(--ease);
+}
+
+.stok-control::placeholder {
+    color: var(--text3);
+}
+
+select.stok-control {
+    cursor: pointer;
+    appearance: auto;
+}
+
+.stok-control:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+.stok-field-row--date .stok-field-label {
+    padding-top: 6px;
+}
+
+.stok-date-split {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    flex: 1;
+}
+
+.stok-date-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.stok-date-lbl {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.32px;
+    text-transform: uppercase;
+    color: var(--text2);
+}
+
+.stok-date-host {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 4px;
+}
+
+.stok-control--date {
+    width: auto !important;
+    min-width: 48px;
+    height: 28px;
+    padding: 0 6px;
+    font-size: 12px;
+}
+
+/* Sağ kolon — üçlü satır */
+.stok-op-row {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr) 16px;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.stok-op-row:last-child {
+    margin-bottom: 0;
+}
+
+.stok-control--grow {
+    min-width: 0;
+}
+
+.stok-chk {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    justify-self: end;
+    cursor: pointer;
+    border: 0.5px solid var(--border-input);
+    border-radius: 3px;
+    accent-color: var(--accent);
+}
+
+/* BÖLÜM 2 — butonlar */
+.stok-actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 24px;
+    align-items: end;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+
+.stok-actions-slot--trail {
+    justify-self: end;
+}
+
+.stok-btn {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: var(--radius-ctl);
+    cursor: pointer;
+    border: 0.5px solid transparent;
+    padding: 8px 24px;
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease),
+        color var(--dur) var(--ease);
+}
+
+.stok-btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+}
+
+.stok-btn-primary:hover {
+    background: var(--accent-hover);
+    color: #fff;
+}
+
+.stok-btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.stok-btn-ghost {
+    background: transparent;
+    color: var(--text2);
+    border: 0.5px solid rgba(60, 52, 40, 0.2);
+}
+
+.stok-btn-ghost:hover {
+    background: var(--surface2);
+}
+
+.stok-msg {
+    min-height: 1.25em;
+    margin: 8px 0 14px;
+    font-size: 13px;
+    color: var(--text2);
+}
+
+.stok-msg:empty {
+    margin: 0;
+    min-height: 0;
+}
+
+/* Tablo üst/alt bar */
+.stok-table-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.stok-table-meta--bottom {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+.stok-table-meta-left {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.stok-pmsg-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+}
+
+.stok-table-meta-right {
+    flex: 1;
+    min-width: 24px;
+}
+
+.stok-pager {
+    display: inline-flex;
+    gap: 6px;
+}
+
+.stok-page-btn {
+    min-width: 32px;
+    height: 30px;
+    padding: 0 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-ctl);
+    cursor: pointer;
+    transition: background-color var(--dur) var(--ease);
+}
+
+.stok-page-btn:hover:not(:disabled) {
+    background: var(--surface2);
+}
+
+.stok-page-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+/* Tablo */
+.stok-table-scroll {
+    overflow: auto;
+    max-height: min(68vh, 720px);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-ctl);
+    background: var(--surface);
+}
+
+.stok-table-scroll::-webkit-scrollbar {
+    width: 5px;
+    height: 4px;
+}
+
+.stok-table-scroll::-webkit-scrollbar-track {
+    background: var(--surface2);
+}
+
+.stok-table-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-input);
+    border-radius: 4px;
+}
+
+.stok-table-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(60, 52, 40, 0.28) var(--surface2);
+}
+
+.stok-grid {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: max-content;
+    min-width: 100%;
+    font-size: 13px;
+}
+
+.stok-grid thead th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    padding: 0 12px;
+    height: 36px;
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.42px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 0.5px solid var(--border);
+    border-right: 0.5px solid var(--border);
+}
+
+.stok-grid thead tr:nth-child(2) th {
+    top: 36px;
+    z-index: 2;
+    padding: 6px 8px;
+    height: auto;
+    min-height: 32px;
+    background: var(--surface);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--text2);
+}
+
+.stok-th-select {
+    width: 40px;
+}
+
+.stok-th-chk {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    vertical-align: middle;
+    accent-color: var(--accent);
+}
+
+.stok-th-ico {
+    width: 40px;
+}
+
+.stok-th-ico i {
+    font-size: 14px;
+    color: var(--accent);
+    opacity: 0.88;
+}
+
+.stok-td-sel {
+    text-align: center;
+    vertical-align: middle;
+    padding: 0 8px !important;
+}
+
+.stok-row-chk {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--accent);
+    border-radius: 3px;
+}
+
+.stok-grid tbody td {
+    height: 38px;
+    padding: 0 12px;
+    font-size: 13px;
+    color: var(--text1);
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 0.5px solid var(--border);
+    border-right: 0.5px solid var(--border);
+    background: var(--surface);
+    transition: background-color var(--dur) var(--ease);
+}
+
+.stok-grid tbody tr:hover td {
+    background: var(--surface2);
+}
+
+.stok-td-ico {
+    padding: 4px !important;
+}
+
+.stok-ico-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-ctl);
+    background: var(--surface2);
+    color: var(--text2);
+    cursor: pointer;
+    transition: background-color var(--dur) var(--ease);
+}
+
+.stok-ico-btn:hover {
+    background: var(--accent-bg);
+    color: var(--accent);
+}
+
+.stok-ico-btn i {
+    font-size: 14px;
+}
+
+.nodata td {
+    padding: 36px 12px !important;
+    font-size: 13px;
+    color: var(--text3);
+    text-align: center;
+    font-weight: 400;
+}
+
+/* Filtre satırı */
+.ft {
+    vertical-align: middle;
+}
+
+.filter-lead {
+    text-align: left !important;
+    color: var(--text2) !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.32px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.cwrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+}
+
+.cwrap.onlydd {
+    justify-content: center;
+}
+
+.stok-filter-txt {
+    flex: 1;
+    min-width: 36px;
+    height: 26px;
+    padding: 0 6px;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--text1);
+    background: var(--surface);
+    border: 0.5px solid var(--border-input);
+    border-radius: 4px;
+    outline: none;
+}
+
+.stok-filter-txt:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+.ddw {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.barr {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--dur) var(--ease);
+}
+
+.barr:hover {
+    background: var(--accent-bg);
+}
+
+.barr-FT {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+}
+
+.pop {
+    display: none;
+    position: absolute;
+    top: calc(100% + 2px);
+    right: 0;
+    z-index: 50;
+    min-width: 160px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 8px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-ctl);
+}
+
+.pop.open {
+    display: block;
+}
+
+.pop-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 2px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color var(--dur) var(--ease);
+}
+
+.pop-row:hover {
+    background: var(--surface2);
+}
+
+.stok-footnote {
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--text3);
+}
+
+@media (max-width: 980px) {
+    .stok-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stok-actions-row {
+        grid-template-columns: 1fr;
+    }
+
+    .stok-actions-slot--trail {
+        justify-self: start;
+    }
+}

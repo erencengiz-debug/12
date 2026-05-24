@@ -1,20 +1,18 @@
 package com.sase.app.controller.web;
 
-import com.sase.app.dto.sase.SaseEslestirmeForm;
 import com.sase.app.entity.SaseEslestirme;
-import com.sase.app.mapper.SaseEslestirmeMapper;
 import com.sase.app.service.SaseEslestirmeService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 @Controller
@@ -22,64 +20,85 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SaseEslestirmeController {
 
+    private static final Set<String> FORMUL_GRUP_KODLARI =
+            Set.of("vw", "psa", "opel", "fiat");
+
     private final SaseEslestirmeService saseEslestirmeService;
-    private final SaseEslestirmeMapper saseEslestirmeMapper;
 
     @GetMapping
     public String list(@AuthenticationPrincipal Jwt jwt, Model model) {
-        UUID userId = UUID.fromString(jwt.getSubject());
-        model.addAttribute("eslestirmeler",
-                saseEslestirmeMapper.toListDtos(saseEslestirmeService.kullaniciyaAit(userId)));
+        if (jwt == null) {
+            return "redirect:/login";
+        }
         model.addAttribute("activePage", "sase");
         return "sase/list";
     }
 
-    @GetMapping("/yeni")
-    public String form(Model model) {
-        model.addAttribute("activePage", "sase");
-        return "sase/form";
+    /**
+     * Marka bazlı şase-formül liste sayfaları; URL <code>/sase/formul/&lt;kod&gt;</code> olarak tanımlandı ki
+     * <code>/sase/{id}</code> (UUID) ile çakılmasın.
+     */
+    @GetMapping("/formul/{grup}")
+    public String formulListe(@AuthenticationPrincipal Jwt jwt, @PathVariable String grup, Model model) {
+        String normalized = grup == null ? "" : grup.trim().toLowerCase(Locale.ROOT);
+        if (!FORMUL_GRUP_KODLARI.contains(normalized)) {
+            return "redirect:/sase";
+        }
+        if ("vw".equals(normalized)) {
+            return "redirect:/sase/vw/formuls";
+        }
+        return "redirect:/sase/" + normalized;
     }
 
-    @PostMapping
-    public String save(
-            @AuthenticationPrincipal Jwt jwt,
-            @Valid SaseEslestirmeForm form,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes ra
-    ) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("errors", bindingResult.getAllErrors());
-            model.addAttribute("activePage", "sase");
-            return "sase/form";
+    /** VW üst giriş — alt sayfalar: {@code /sase/vw/formuls} vb. */
+    @GetMapping("/vw")
+    public String saseVwUstSayfa(Model model, @AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) {
+            return "redirect:/login";
         }
+        model.addAttribute("currentUserJwtSub", jwt.getSubject());
+        UUID uid = UUID.fromString(jwt.getSubject());
+        model.addAttribute("activePage", "sase-vw");
+        model.addAttribute("vwRows", saseEslestirmeService.vwFormulListeSatirlari(uid));
+        model.addAttribute("ekleyenOptions", saseEslestirmeService.vwFormulListeEkleyenSecenekleri(uid));
+        return "sase/vw-hub";
+    }
 
-        SaseEslestirme eslestirme = SaseEslestirme.builder()
-                .userId(UUID.fromString(jwt.getSubject()))
-                .baslik(form.baslik())
-                .saseKod1(blankToNull(form.saseKod1()))
-                .saseKod2(blankToNull(form.saseKod2()))
-                .saseKod3(blankToNull(form.saseKod3()))
-                .saseKod4(blankToNull(form.saseKod4()))
-                .saseKod5(blankToNull(form.saseKod5()))
-                .saseKod6(blankToNull(form.saseKod6()))
-                .saseKod7(blankToNull(form.saseKod7()))
-                .saseKod8(blankToNull(form.saseKod8()))
-                .saseKod9(blankToNull(form.saseKod9()))
-                .model(blankToNull(form.model()))
-                .modelYili(blankToNull(form.modelYili()))
-                .uretimTarihiBaslangic(form.uretimTarihiBaslangic())
-                .uretimTarihiBitis(form.uretimTarihiBitis())
-                .motorKodu(blankToNull(form.motorKodu()))
-                .sanzimanKodu(blankToNull(form.sanzimanKodu()))
-                .satisTipi(blankToNull(form.satisTipi()))
-                .aksTahrigiTanimi(blankToNull(form.aksTahrigiTanimi()))
-                .executed(false)
-                .build();
+    /** VW formül & liste (eski {@code /sase/vw}) */
+    @GetMapping("/vw/formuls")
+    public String saseVwFormuls(Model model, @AuthenticationPrincipal Jwt jwt) {
+        return formulEslestirmeSayfa(model, jwt, "VW");
+    }
 
-        SaseEslestirme saved = saseEslestirmeService.kaydet(eslestirme);
-        ra.addFlashAttribute("successMsg", "Eşleştirme kaydedildi.");
-        return "redirect:/sase/" + saved.getId();
+    @GetMapping("/psa")
+    public String sasePsa(Model model, @AuthenticationPrincipal Jwt jwt) {
+        return formulEslestirmeSayfa(model, jwt, "PSA");
+    }
+
+    @GetMapping("/opel")
+    public String saseOpel(Model model, @AuthenticationPrincipal Jwt jwt) {
+        return formulEslestirmeSayfa(model, jwt, "OPEL");
+    }
+
+    @GetMapping("/fiat")
+    public String saseFiat(Model model, @AuthenticationPrincipal Jwt jwt) {
+        return formulEslestirmeSayfa(model, jwt, "FIAT");
+    }
+
+    /** Tam ekran form + tablo; veri AJAX ile {@code /api/sase}'den çekilir. */
+    private String formulEslestirmeSayfa(Model model, Jwt jwt, String marka) {
+        if (jwt != null) {
+            model.addAttribute("currentUserJwtSub", jwt.getSubject());
+        }
+        model.addAttribute("marka", marka);
+        model.addAttribute("activePage", "sase-formul-" + marka.toLowerCase(Locale.ROOT));
+        return "sase/sase-eslestirme";
+    }
+
+    /** Eski adres; formül ekranına yönlendirir ({@code /sase/vw/formuls}). */
+    @GetMapping("/yeni")
+    public String yeniEskiAdresRedirect() {
+        return "redirect:/sase/vw/formuls";
     }
 
     @GetMapping("/{id}")
@@ -95,9 +114,11 @@ public class SaseEslestirmeController {
     }
 
     @PostMapping("/{id}/calistir")
-    public String calistir(@PathVariable UUID id, RedirectAttributes ra) {
+    public String calistir(@AuthenticationPrincipal Jwt jwt,
+                           @PathVariable UUID id,
+                           RedirectAttributes ra) {
         try {
-            saseEslestirmeService.calistir(id);
+            saseEslestirmeService.calistir(id, UUID.fromString(jwt.getSubject()));
             ra.addFlashAttribute("successMsg", "Eşleştirme çalıştırıldı.");
         } catch (EntityNotFoundException ex) {
             ra.addFlashAttribute("errorMsg", "Kayıt bulunamadı.");
@@ -106,13 +127,15 @@ public class SaseEslestirmeController {
     }
 
     @PostMapping("/{id}/sil")
-    public String sil(@PathVariable UUID id, RedirectAttributes ra) {
-        saseEslestirmeService.sil(id);
-        ra.addFlashAttribute("successMsg", "Kayıt silindi.");
+    public String sil(@AuthenticationPrincipal Jwt jwt,
+                      @PathVariable UUID id,
+                      RedirectAttributes ra) {
+        try {
+            saseEslestirmeService.silGuvenli(id, UUID.fromString(jwt.getSubject()));
+            ra.addFlashAttribute("successMsg", "Kayıt silindi.");
+        } catch (EntityNotFoundException ex) {
+            ra.addFlashAttribute("errorMsg", "Kayıt silinemedi veya size ait değil.");
+        }
         return "redirect:/sase";
-    }
-
-    private String blankToNull(String s) {
-        return (s == null || s.isBlank()) ? null : s.trim();
     }
 }

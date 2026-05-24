@@ -15,7 +15,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Controller
@@ -58,7 +57,7 @@ public class NotController {
                 .userId(UUID.fromString(jwt.getSubject()))
                 .baslik(form.baslik())
                 .aciklama(form.aciklama() != null && !form.aciklama().isBlank() ? form.aciklama() : null)
-                .tarih(form.tarih().atStartOfDay().atOffset(ZoneOffset.UTC))
+                .tarih(form.tarih().atStartOfDay())
                 .build();
 
         notService.kaydet(not);

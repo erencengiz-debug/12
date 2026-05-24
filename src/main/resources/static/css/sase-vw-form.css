@@ -1,0 +1,427 @@
+/**
+ * VW /sase/vw/formuls — masaüstü görsel düzeni (yalnızca #legacyVwShell içinde).
+ */
+#legacyVwShell,
+#legacyVwShell *,
+#legacyVwShell *::before,
+#legacyVwShell *::after {
+    box-sizing: border-box;
+}
+
+#legacyVwShell {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    font-size: 13px;
+    color: #444;
+    background: #fff;
+    padding: 20px;
+    min-width: 1200px;
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+#legacyVwShell h1,
+#legacyVwShell .page-title {
+    font-size: 18px;
+    font-weight: normal;
+    color: #333;
+    margin: 0 0 16px 0;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+/* ─── Üst bilgi ─── */
+#legacyVwShell .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 40px;
+    margin-bottom: 16px;
+}
+
+#legacyVwShell .info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+#legacyVwShell .info-label {
+    width: 180px;
+    font-size: 13px;
+    color: #444;
+    flex-shrink: 0;
+}
+
+#legacyVwShell input[readonly],
+#legacyVwShell input.readonly {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 4px 6px;
+    font-size: 13px;
+    width: 160px;
+}
+
+#legacyVwShell input.full-width {
+    width: 100%;
+}
+
+#legacyVwShell .baslik-row .baslik-editable {
+    background: #fff;
+    border: 1px solid #bbb;
+    padding: 5px 8px;
+    font-size: 13px;
+    flex: 1;
+    max-width: 100%;
+}
+
+#legacyVwShell .baslik-hint {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+#legacyVwShell .baslik-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    max-width: 100%;
+}
+
+#legacyVwShell .req-star {
+    color: #c53030;
+}
+
+/* ─── Form satırı (3 sütun) ─── */
+#legacyVwShell .form-row {
+    display: grid;
+    grid-template-columns: 280px 1fr 1fr;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 4px 0;
+}
+
+#legacyVwShell .form-row-stok-wide {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    align-items: start;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding: 4px 0;
+}
+
+#legacyVwShell .form-label {
+    font-size: 13px;
+    color: #444;
+    white-space: nowrap;
+}
+
+#legacyVwShell .field-hint {
+    font-size: 12px;
+    color: #444;
+    line-height: 1.5;
+}
+
+#legacyVwShell .field-hint strong {
+    font-weight: bold;
+}
+
+/* ─── Bölüm başlıkları ─── */
+#legacyVwShell .section-header {
+    background: #e8e8e8;
+    padding: 6px 12px;
+    font-size: 16px;
+    color: #333;
+    font-weight: normal;
+    margin: 16px 0 10px 0;
+    display: block;
+    width: 100%;
+}
+
+/* ─── Şase grupları (sarı) ─── */
+#legacyVwShell .sase-input {
+    background: #fffacd;
+    border: 1px solid #d4c87a;
+    padding: 4px 6px;
+    font-size: 13px;
+}
+
+#legacyVwShell .sase-input.short {
+    width: 80px;
+}
+
+#legacyVwShell .sase-input.medium {
+    width: 120px;
+}
+
+#legacyVwShell .sase-input.wide {
+    width: 100%;
+    min-width: 0;
+}
+
+#legacyVwShell .sase-field-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    min-width: 0;
+}
+
+/* ─── Araç modeli (turuncu) ─── */
+#legacyVwShell .model-field-inner {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    min-width: 0;
+    width: 100%;
+}
+
+#legacyVwShell .model-field-inner-grow {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+#legacyVwShell .model-input {
+    background: #f77f00;
+    border: 1px solid #e07000;
+    color: #fff;
+    padding: 5px 8px;
+    font-size: 13px;
+    width: 100%;
+    height: 28px;
+}
+
+#legacyVwShell .model-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#legacyVwShell .model-textarea {
+    background: #f77f00;
+    border: 1px solid #e07000;
+    color: #fff;
+    padding: 5px 8px;
+    font-size: 13px;
+    width: 100%;
+    height: 90px;
+    resize: vertical;
+}
+
+#legacyVwShell .model-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#legacyVwShell .model-motor-inner {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
+}
+
+#legacyVwShell .model-motor-inner .model-textarea {
+    flex: 1;
+}
+
+#legacyVwShell .kriter-select {
+    background: #0078d4;
+    border: 1px solid #ccc;
+    color: #fff;
+    padding: 5px 8px;
+    font-size: 13px;
+    width: 160px;
+    height: 28px;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 2px;
+}
+
+#legacyVwShell .kriter-select:hover {
+    background: #106ebe;
+}
+
+#legacyVwShell .kriter-select:focus {
+    outline: 2px solid #0078d4;
+    outline-offset: 2px;
+}
+
+/* Listede beyaz satırlar, seçili/hover tarayıcıya bağlı */
+#legacyVwShell .kriter-select option {
+    background: #fff;
+    color: #222;
+    padding: 6px 8px;
+}
+
+#legacyVwShell input[type="date"].model-input,
+#legacyVwShell .date-input {
+    background: #f77f00;
+    color: #fff;
+    border: 1px solid #e07000;
+    padding: 4px 6px;
+    font-size: 13px;
+    width: 160px;
+    height: 28px;
+}
+
+#legacyVwShell input[type="date"].model-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.85;
+}
+
+/* ─── Şase kodları grid ─── */
+#legacyVwShell .sase-kodlari-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    width: 75%;
+    max-width: 640px;
+}
+
+#legacyVwShell .sase-kod-input {
+    background: #feffd0;
+    border: 1px solid #c8c87a;
+    padding: 5px 8px;
+    font-size: 13px;
+    width: 100%;
+}
+
+#legacyVwShell .sase-kod-input.solo {
+    grid-column: 1;
+}
+
+/* ─── Olmayacak şase ─── */
+#legacyVwShell .olmayacak-input {
+    background: #ffd6e7;
+    border: 1px solid #e8a0b8;
+    padding: 5px 8px;
+    font-size: 13px;
+    width: 75%;
+    max-width: 720px;
+}
+
+/* ─── Stok ─── */
+#legacyVwShell .stok-label-block {
+    font-size: 12px;
+    color: #444;
+    line-height: 1.8;
+    vertical-align: top;
+    width: 280px;
+}
+
+#legacyVwShell .stok-label-block strong {
+    display: inline-block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+#legacyVwShell .stok-textarea {
+    background: #fff;
+    border: 1px solid #bbb;
+    padding: 6px 8px;
+    font-size: 13px;
+    width: 720px;
+    max-width: 100%;
+    height: 240px;
+    resize: vertical;
+    vertical-align: top;
+}
+
+#legacyVwShell .stok-help {
+    font-size: 11px;
+    color: #666;
+    margin-top: 6px;
+}
+
+#legacyVwShell .aciklama-input {
+    background: #fff;
+    border: 1px solid #bbb;
+    padding: 5px 8px;
+    font-size: 13px;
+    width: 720px;
+    max-width: 100%;
+}
+
+/* ─── Butonlar ─── */
+#legacyVwShell .btn-blue {
+    background: #2b6cb0;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+#legacyVwShell .btn-blue:hover {
+    background: #245a9a;
+}
+
+#legacyVwShell .btn-outline {
+    background: #fff;
+    color: #333;
+    border: 1px solid #bbb;
+    padding: 8px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+#legacyVwShell .btn-outline:hover {
+    background: #f5f5f5;
+}
+
+#legacyVwShell .btn-run {
+    background: #fff;
+    color: #c53030;
+    border: 1px solid #ccc;
+    padding: 8px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+#legacyVwShell .btn-run:hover {
+    background: #fff5f5;
+}
+
+#legacyVwShell .btn-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+#legacyVwShell .btn-row-left {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+#legacyVwShell .btn-row-center {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#legacyVwShell .btn-row-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#legacyVwShell .kayit-mod-badge {
+    font-size: 12px;
+    color: #666;
+}
+
+/* JS doğrulama / turuncu zorunlu işaretleme */
+#legacyVwShell .lv-inv {
+    outline: 2px solid #c53030 !important;
+    outline-offset: 1px;
+}

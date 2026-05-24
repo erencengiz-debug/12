@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Giriş – Şase Eşleştirme</title>
+    <title>Giriş – Autotarget · Şase Eşleştirme</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
@@ -48,7 +48,7 @@
     <div class="text-center" style="max-width:420px; width:100%; padding:1rem;">
 
         <div style="font-size:.7rem; font-weight:700; letter-spacing:3px; color:rgba(255,255,255,.6); text-transform:uppercase; margin-bottom:4px;">
-            Volkswagen Group
+            Autotarget
         </div>
         <div style="font-size:1.4rem; font-weight:700; color:#fff; margin-bottom:2rem;">
             Şase Eşleştirme Sistemi
@@ -58,11 +58,15 @@
             <h5 class="fw-semibold mb-1" style="color:#1a3a5c;">Hoş Geldiniz</h5>
             <p class="text-muted small mb-4">Sisteme erişmek için giriş yapın</p>
 
-            <div th:if="${errorMsg}" class="alert alert-danger d-flex align-items-center gap-2 py-2 small">
+            <div th:if="${errorMsg}" class="alert alert-danger d-flex align-items-center gap-2 py-2 small" role="alert">
                 <i class="bi bi-exclamation-triangle-fill"></i>
                 <span th:text="${errorMsg}"></span>
             </div>
-            <div th:if="${param.logout}" class="alert alert-success d-flex align-items-center gap-2 py-2 small">
+            <div th:if="${serviceErrorMsg}" class="alert alert-warning d-flex align-items-center gap-2 py-2 small" role="alert">
+                <i class="bi bi-wifi-off"></i>
+                <span th:text="${serviceErrorMsg}"></span>
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success d-flex align-items-center gap-2 py-2 small" role="alert">
                 <i class="bi bi-check-circle-fill"></i>
                 <span>Başarıyla çıkış yaptınız.</span>
             </div>
@@ -96,8 +100,13 @@
             </form>
         </div>
 
+        <p class="mt-4 mb-0 small" style="color:rgba(255,255,255,.4);">
+            &copy; 2026 Autotarget · Tüm hakları saklıdır
+        </p>
+    </div>
+
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', function () {
             var btn = document.getElementById('loginBtn');
             if (!this.checkValidity()) return;
             btn.disabled = true;
@@ -105,10 +114,5 @@
             document.getElementById('btnLoading').classList.remove('d-none');
         });
     </script>
-
-        <p class="mt-4 small" style="color:rgba(255,255,255,.4);">
-            &copy; 2026 Volkswagen Group · Tüm hakları saklıdır
-        </p>
-    </div>
 </body>
 </html>

@@ -4,85 +4,197 @@
       layout:decorate="~{layout/base}"
       lang="tr">
 <head>
-    <title>Şase Eşleştirme</title>
+    <title>Manuel (Şase No olmadan) Araç Seçimi</title>
+    <th:block layout:fragment="head-extra">
+        <link rel="stylesheet" th:href="@{/css/sase-hub.css}">
+    </th:block>
 </head>
 <body>
 <th:block layout:fragment="content">
+    <script th:inline="javascript">
+        window.__SASE_MANUEL_API_BASE = /*[[@{/api/sase}]]*/ '';
+        window.__SASE_MANUEL_STOK_PAGE = /*[[@{/stok}]]*/ '';
+        window.__SASE_MANUEL_SASE_DETAIL_BASE = /*[[@{/sase}]]*/ '';
+    </script>
 
-    <div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-2">
-        <div>
-            <h1><i class="bi bi-diagram-3 me-2 text-danger"></i>Şase Eşleştirme</h1>
-            <p class="text-muted mb-0" th:text="|Toplam ${eslestirmeler.size()} kayıt|"></p>
+    <div class="sase-manuel-page">
+        <!-- 1. Üst kullanıcı satırı -->
+        <div class="sase-manuel-userrow">
+            <div class="sase-manuel-userrow-name">
+                <span th:with="prof=${currentUser}">
+                    <th:block th:if="${prof != null}">
+                        <span th:text="|${prof.displayName()} - ${prof.kullaniciAdi()}|">Kullanıcı</span>
+                    </th:block>
+                    <th:block th:if="${prof == null}">
+                        <span>Kullanıcı</span>
+                    </th:block>
+                </span>
+            </div>
+            <form th:action="@{/logout}" method="post" class="m-0 p-0 d-inline">
+                <button type="submit" class="sase-manuel-logout-btn">Çıkış</button>
+            </form>
         </div>
-        <a th:href="@{/sase/yeni}" class="btn btn-primary btn-sm mt-1">
-            <i class="bi bi-plus-lg me-1"></i>Yeni Eşleştirme
-        </a>
-    </div>
 
-    <div class="page-body">
-        <div class="card">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                    <tr>
-                        <th>Başlık</th>
-                        <th>Şase Kodları</th>
-                        <th>Model</th>
-                        <th class="text-center">Eşlenek Adedi</th>
-                        <th class="text-center">Durum</th>
-                        <th>Oluşturulma</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:if="${eslestirmeler.empty}">
-                        <td colspan="7" class="text-center text-muted py-5">
-                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                            Henüz eşleştirme kaydı yok.
-                            <a th:href="@{/sase/yeni}" class="d-block mt-2">İlk kaydı oluştur</a>
-                        </td>
-                    </tr>
-                    <tr th:each="e : ${eslestirmeler}">
-                        <td class="fw-semibold" th:text="${e.baslik}"></td>
-                        <td>
-                            <code th:if="${e.saseKod1}" th:text="${e.saseKod1}" class="me-1"></code>
-                            <code th:if="${e.saseKod2}" th:text="${e.saseKod2}" class="me-1"></code>
-                            <span th:if="${e.saseKod3}" class="text-muted small">…</span>
-                        </td>
-                        <td th:text="${e.model} ?: '–'"></td>
-                        <td class="text-center">
-                            <span th:if="${e.eslenikSaseAdedi != null}"
-                                  class="badge bg-primary-subtle text-primary fw-semibold"
-                                  th:text="${e.eslenikSaseAdedi}"></span>
-                            <span th:unless="${e.eslenikSaseAdedi != null}" class="text-muted">–</span>
-                        </td>
-                        <td class="text-center">
-                            <span th:if="${e.executed}" class="badge bg-success-subtle text-success">
-                                <i class="bi bi-check2 me-1"></i>Tamamlandı
-                            </span>
-                            <span th:unless="${e.executed}" class="badge bg-warning-subtle text-warning">
-                                <i class="bi bi-hourglass-split me-1"></i>Bekliyor
-                            </span>
-                        </td>
-                        <td class="text-muted small"
-                            th:text="${e.createdAt != null} ? ${#temporals.format(e.createdAt, 'dd.MM.yyyy HH:mm')} : '–'"></td>
-                        <td>
-                            <a th:href="@{/sase/{id}(id=${e.id})}" class="btn btn-sm btn-outline-primary py-0 me-1">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <form th:action="@{/sase/{id}/sil(id=${e.id})}" method="post" class="d-inline"
-                                  onsubmit="return confirm('Bu kaydı silmek istediğinize emin misiniz?')">
-                                <button class="btn btn-sm btn-outline-danger py-0">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+        <!-- 2. Sarı başlık -->
+        <header class="sase-manuel-banner">
+            <h2 class="sase-manuel-banner-title">Manuel (Şase No olmadan) Araç Seçimi</h2>
+        </header>
+
+        <!-- 3. Marka kutuları -->
+        <div class="sase-manuel-logos-wrap">
+            <div class="sase-manuel-logos-inner">
+                <div class="sase-manuel-brand" tabindex="0" role="button" data-slug="vw"
+                     th:title="'Tek tık: filtre; çift tık: VW formül'"
+                     th:data-formul-href="@{/sase/vw/formuls}">
+                    <img class="sase-manuel-brand-logo"
+                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Volkswagen_logo_2019.svg/120px-Volkswagen_logo_2019.svg.png"
+                         width="120" height="120" alt="Volkswagen" data-fallback="VW"
+                         referrerpolicy="no-referrer-when-downgrade" loading="lazy">
+                </div>
+                <div class="sase-manuel-brand" tabindex="0" role="button" data-slug="audi"
+                     title="Audi — çift tık: formül sayfası" th:data-formul-href="@{/sase/vw/formuls}">
+                    <img class="sase-manuel-brand-logo"
+                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Audi-Logo_2016.svg/120px-Audi-Logo_2016.svg.png"
+                         width="120" height="120" alt="Audi" data-fallback="Audi"
+                         referrerpolicy="no-referrer-when-downgrade" loading="lazy">
+                </div>
+                <div class="sase-manuel-brand" tabindex="0" role="button" data-slug="seat"
+                     title="SEAT — çift tık: formül sayfası" th:data-formul-href="@{/sase/vw/formuls}">
+                    <!-- SEAT Logo from 2017.svg — önceki "SEAT_Logo.svg" thumb Commons’ta yok -->
+                    <img class="sase-manuel-brand-logo"
+                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/SEAT_Logo_from_2017.svg/120px-SEAT_Logo_from_2017.svg.png"
+                         width="120" height="120" alt="SEAT" data-fallback="SEAT"
+                         referrerpolicy="no-referrer-when-downgrade" loading="lazy">
+                </div>
+                <div class="sase-manuel-brand" tabindex="0" role="button" data-slug="cupra"
+                     title="CUPRA — çift tık: formül sayfası" th:data-formul-href="@{/sase/vw/formuls}">
+                    <!-- File:Cupra.svg — "CUPRA_Logo.svg" dosya adı Commons’ta yok -->
+                    <img class="sase-manuel-brand-logo"
+                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Cupra.svg/120px-Cupra.svg.png"
+                         width="120" height="120" alt="Cupra" data-fallback="Cupra"
+                         referrerpolicy="no-referrer-when-downgrade" loading="lazy">
+                </div>
+                <div class="sase-manuel-brand" tabindex="0" role="button" data-slug="skoda"
+                     title="Škoda — çift tık: formül sayfası" th:data-formul-href="@{/sase/vw/formuls}">
+                    <img class="sase-manuel-brand-logo"
+                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/%C5%A0koda_Auto.svg/120px-%C5%A0koda_Auto.svg.png"
+                         width="120" height="120" alt="Škoda" data-fallback="Škoda"
+                         referrerpolicy="no-referrer-when-downgrade" loading="lazy">
+                </div>
+                <div class="sase-manuel-brand" tabindex="0" role="button" data-slug="peugeot"
+                     title="Peugeot — çift tık: formül sayfası" th:data-formul-href="@{/sase/psa}">
+                    <!-- 120px PNG bazı ortamlarda hata verebiliyor; orijinal SVG img ile daha tutarlı -->
+                    <img class="sase-manuel-brand-logo"
+                         src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Peugeot_Logo.svg"
+                         width="120" height="120" alt="Peugeot" data-fallback="Peugeot"
+                         data-fallback-img-src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Peugeot_Logo.svg/250px-Peugeot_Logo.svg.png"
+                         referrerpolicy="no-referrer-when-downgrade" loading="lazy">
+                </div>
+                <div class="sase-manuel-brand" tabindex="0" role="button" data-slug="ds"
+                     title="DS — çift tık: formül sayfası" th:data-formul-href="@{/sase/psa}">
+                    <!-- DS Automobiles marka sembolü (2009) -->
+                    <img class="sase-manuel-brand-logo"
+                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/DS_Automobiles_2009_logo.svg/120px-DS_Automobiles_2009_logo.svg.png"
+                         width="120" height="120" alt="DS" data-fallback="DS"
+                         referrerpolicy="no-referrer-when-downgrade" loading="lazy">
+                </div>
+                <div class="sase-manuel-brand" tabindex="0" role="button" data-slug="citroen"
+                     title="Citroën — çift tık: formül sayfası" th:data-formul-href="@{/sase/psa}">
+                    <img class="sase-manuel-brand-logo"
+                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Citroen_2022.svg/120px-Citroen_2022.svg.png"
+                         width="120" height="120" alt="Citroën" data-fallback="Citroën"
+                         referrerpolicy="no-referrer-when-downgrade" loading="lazy">
+                </div>
+                <div class="sase-manuel-brand" tabindex="0" role="button" data-slug="opel"
+                     title="Opel — çift tık: formül sayfası" th:data-formul-href="@{/sase/opel}">
+                    <!-- File:Opel-Logo 2017.svg -->
+                    <img class="sase-manuel-brand-logo"
+                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Opel-Logo_2017.svg/120px-Opel-Logo_2017.svg.png"
+                         width="120" height="120" alt="Opel" data-fallback="Opel"
+                         referrerpolicy="no-referrer-when-downgrade" loading="lazy">
+                </div>
+                <div class="sase-manuel-brand" tabindex="0" role="button" data-slug="fiat"
+                     title="Fiat — çift tık: formül sayfası" th:data-formul-href="@{/sase/fiat}">
+                    <!-- File:FIAT logo (2020).svg -->
+                    <img class="sase-manuel-brand-logo"
+                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/FIAT_logo_%282020%29.svg/120px-FIAT_logo_%282020%29.svg.png"
+                         width="120" height="120" alt="Fiat" data-fallback="Fiat"
+                         referrerpolicy="no-referrer-when-downgrade" loading="lazy">
+                </div>
             </div>
         </div>
+
+        <!-- 4. Filtreler -->
+        <div class="sase-manuel-filters-row">
+            <select id="selManuelModel" class="sase-hub-select" disabled
+                    data-ph="Model Seçiniz">
+                <option value="">Model Seçiniz</option>
+            </select>
+            <select id="selManuelAltModel" class="sase-hub-select" disabled
+                    data-ph="Alt Model Seçiniz">
+                <option value="">Alt Model Seçiniz</option>
+            </select>
+            <select id="selManuelYil" class="sase-hub-select" disabled
+                    data-ph="Yıl Seçiniz">
+                <option value="">Yıl Seçiniz</option>
+            </select>
+            <select id="selManuelKat1" class="sase-hub-select" disabled
+                    data-ph="Kategori Seçiniz">
+                <option value="">Kategori Seçiniz</option>
+            </select>
+            <select id="selManuelKat2" class="sase-hub-select" disabled
+                    data-ph="Alt Kategori Seçiniz">
+                <option value="">Alt Kategori Seçiniz</option>
+            </select>
+            <select id="selManuelAck1" class="sase-hub-select" disabled
+                    data-ph="Açıklama Seçiniz">
+                <option value="">Açıklama Seçiniz</option>
+            </select>
+            <select id="selManuelAck2" class="sase-hub-select" disabled
+                    data-ph="Açıklama Seçiniz">
+                <option value="">Açıklama Seçiniz</option>
+            </select>
+        </div>
+
+        <div class="sase-manuel-gold-strip" aria-hidden="true"></div>
+
+        <!-- 6. Şase numarası arama -->
+        <section class="sase-manuel-arama-wrap">
+            <div class="sase-manuel-arama-inner mb-3">
+                <label class="sase-manuel-label" for="inpManuelVin">Araç Şase No :</label>
+                <input id="inpManuelVin" class="sase-manuel-vin-input" type="text" maxlength="200"
+                       placeholder="ŞASE NO GİR" autocomplete="off">
+                <button type="button" id="btnManuelDots" class="sase-manuel-btn-dots"
+                        title="Seçili filtre değerlerini kullanarak stokta ara">...</button>
+                <button type="button" id="btnManuelGetir" class="sase-manuel-btn-getir">GETİR</button>
+            </div>
+
+            <div class="sase-manuel-radios">
+                <label>
+                    <input type="radio" name="manuelAramaMod" value="sase" checked>
+                    Şase No ile getir.
+                </label>
+                <label>
+                    <input type="radio" name="manuelAramaMod" value="plaka">
+                    Plaka No ile getir.
+                </label>
+                <label>
+                    <input type="radio" name="manuelAramaMod" value="isim">
+                    İsim ile getir.
+                </label>
+            </div>
+        </section>
+
+        <!-- 7. Alt gri şeritler -->
+        <div class="sase-manuel-bands" aria-hidden="true">
+            <span class="band-a"></span>
+            <span class="band-b"></span>
+            <span class="band-a"></span>
+            <span class="band-b"></span>
+        </div>
     </div>
+
+    <script defer th:src="@{/js/sase-hub.js}"></script>
 </th:block>
 </body>
 </html>

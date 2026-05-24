@@ -12,132 +12,459 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
         :root {
-            --sidebar-w: 240px;
-            --brand-dark: #1a3a5c;
-            --brand-mid: #2b5797;
+            --header-h-fixed: 48px;
+            --app-nav-bg: #1a1a1a;
         }
-        body { background: #f0f2f5; font-size: .9rem; }
+        body { background: #f0f2f5; font-size: .9rem; padding-top: var(--header-h-fixed); }
 
-        /* ── Sidebar ── */
-        #sidebar {
-            position: fixed; top: 0; left: 0; bottom: 0;
-            width: var(--sidebar-w);
-            background: var(--brand-dark);
-            display: flex; flex-direction: column;
+        .app-site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             z-index: 1040;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
         }
-        #sidebar .brand {
-            padding: 1.1rem 1.25rem;
-            font-size: 1rem; font-weight: 700;
-            color: #fff; letter-spacing: -.3px;
-            border-bottom: 1px solid rgba(255,255,255,.1);
+
+        /* Tek şerit navbar */
+        .app-topnav {
+            background-color: var(--app-nav-bg);
+            min-height: var(--header-h-fixed);
+            padding: 0 16px;
         }
-        #sidebar .nav-link {
-            color: rgba(255,255,255,.7);
-            padding: .55rem 1.25rem;
-            border-radius: 6px;
-            margin: 1px 8px;
-            transition: background .15s, color .15s;
+
+        .app-topnav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: var(--header-h-fixed);
+            width: 100%;
         }
-        #sidebar .nav-link:hover,
-        #sidebar .nav-link.active {
-            background: rgba(255,255,255,.12);
+
+        @media (min-width: 992px) {
+            .app-topnav-inner {
+                flex-wrap: nowrap;
+            }
+        }
+
+        #hdrMenusCollapse.app-topnav-menu {
+            gap: 4px;
+        }
+
+        @media (min-width: 992px) {
+            #hdrMenusCollapse.app-topnav-menu {
+                display: flex !important;
+                flex-direction: row;
+                align-items: center;
+                flex-wrap: wrap;
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+        }
+
+        /* Her menü hücresi (link veya tetikleyici) */
+        .app-nav-item-link {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 400;
+            padding: 0 12px;
+            height: 48px;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 4px;
+            white-space: nowrap;
+            text-decoration: none;
+            border: 1px solid transparent;
+            background: transparent;
+            box-sizing: border-box;
+        }
+
+        .app-nav-item-link:hover {
+            background-color: #2a2a2a;
             color: #fff;
         }
-        #sidebar .nav-link .bi { width: 20px; text-align: center; margin-right: 8px; }
-        #sidebar .nav-section {
-            font-size: .7rem; font-weight: 600; letter-spacing: .08em;
-            color: rgba(255,255,255,.4); text-transform: uppercase;
-            padding: .75rem 1.25rem .25rem;
-        }
-        #sidebar .user-area {
-            margin-top: auto;
-            border-top: 1px solid rgba(255,255,255,.1);
-            padding: .9rem 1.25rem;
+
+        .app-nav-item-link.active {
+            background-color: #333;
+            border: 1px solid #555;
+            color: #fff;
         }
 
-        /* ── Main content ── */
-        #main-wrap {
-            margin-left: var(--sidebar-w);
-            min-height: 100vh;
+        /* Dropdown tetikleyicisi — .nav-item benzeri */
+        .app-topnav .app-nav-dropdown > .dropdown-toggle {
+            color: #fff !important;
+            font-size: 13px !important;
+            font-weight: 400 !important;
+            padding: 0 12px !important;
+            height: 48px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0;
+            cursor: pointer;
+            border-radius: 4px;
+            white-space: nowrap;
+            background: transparent !important;
+            border: 1px solid transparent !important;
+            box-shadow: none !important;
         }
+
+        .app-topnav .app-nav-dropdown > .dropdown-toggle::after {
+            display: none;
+        }
+
+        .app-topnav .app-nav-dropdown > .dropdown-toggle:hover,
+        .app-topnav .app-nav-dropdown > .dropdown-toggle:focus-visible,
+        .app-topnav .app-nav-dropdown.show > .dropdown-toggle {
+            background-color: #2a2a2a !important;
+            color: #fff !important;
+        }
+
+        .app-nav-arrow {
+            font-size: 10px;
+            margin-left: 4px;
+            color: #aaa;
+            line-height: 1;
+        }
+
+        /* Açılır liste */
+        .app-topnav .dropdown-menu.app-dropdown-menu {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 280px;
+            margin-top: 4px !important;
+            z-index: 1000;
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+
+        .app-topnav .dropdown-menu.app-dropdown-menu .dropdown-item {
+            font-size: 13px;
+            color: #333;
+            padding: 8px 16px;
+            cursor: pointer;
+            white-space: nowrap;
+            border-radius: 0;
+        }
+
+        .app-topnav .dropdown-menu.app-dropdown-menu .dropdown-item:hover {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .app-topnav .dropdown-menu.app-dropdown-menu .dropdown-item.active {
+            font-weight: 600;
+            color: #1a1a1a;
+            background: rgba(26, 26, 26, 0.08);
+        }
+
+        .app-topnav .dropdown-menu.app-dropdown-menu .dropdown-item:active {
+            background-color: #e8e8e8;
+            color: #1a1a1a;
+        }
+
+        /* Sağ kullanıcı */
+        .app-topnav-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .app-topnav-user .u-display {
+            color: #fff;
+            font-size: 13px;
+            max-width: 14rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .app-topnav-user .badge-role-pill {
+            background-color: #555;
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: 500;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .app-topnav-user .btn-nav-logout {
+            background-color: transparent;
+            border: 1px solid #555;
+            color: #fff;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .app-topnav-user .btn-nav-logout:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .app-topnav .mobile-toggle {
+            color: #fff;
+            border: 1px solid #555;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: transparent;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        /* Masaüstünde Bootstrap collapse hep açık */
+        @media (min-width: 992px) {
+            #hdrMenusCollapse.collapse:not(.show) {
+                display: flex !important;
+                height: auto !important;
+                visibility: visible !important;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            #hdrMenusCollapse {
+                flex-direction: column;
+                align-items: stretch !important;
+                flex-basis: 100%;
+                width: 100%;
+                padding: 0 0 8px;
+                background: var(--app-nav-bg);
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            #hdrMenusCollapse:not(.show) {
+                display: none !important;
+            }
+
+            .app-topnav-inner {
+                flex-wrap: wrap;
+            }
+
+            .app-topnav .app-nav-dropdown {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                width: 100%;
+            }
+
+            .app-topnav .app-nav-dropdown > .dropdown-toggle {
+                width: 100% !important;
+                justify-content: space-between !important;
+                border-radius: 0 !important;
+                border-color: transparent !important;
+                padding-left: 8px !important;
+                padding-right: 12px !important;
+            }
+
+            .app-nav-item-link {
+                width: 100%;
+                border-radius: 0 !important;
+                padding-left: 12px !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .app-topnav .app-nav-dropdown .dropdown-menu {
+                position: static !important;
+                transform: none !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                margin-top: 0 !important;
+                border-radius: 0 !important;
+                border-left: none;
+                border-right: none;
+                box-shadow: none !important;
+            }
+        }
+
+        #main-wrap { min-height: calc(100vh - var(--header-h-fixed)); }
+
         .page-header { padding: 1.5rem 1.75rem .5rem; }
         .page-header h1 { font-size: 1.35rem; font-weight: 700; margin: 0; }
         .page-body { padding: .75rem 1.75rem 2rem; }
 
-        /* ── Cards ── */
         .card { border: none; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
-        .stat-icon { width: 44px; height: 44px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
-
-        /* ── Table ── */
-        .table > :not(caption) > * > * { padding: .6rem .9rem; vertical-align: middle; }
-        .table thead th { font-size: .75rem; font-weight: 600; letter-spacing: .06em;
-            text-transform: uppercase; color: #6c757d; background: #f8f9fa; border-bottom: 2px solid #dee2e6; }
-
-        /* ── Badges ── */
-        .badge { font-weight: 500; }
-
-        @media (max-width: 767px) {
-            #sidebar { transform: translateX(-100%); }
-            #main-wrap { margin-left: 0; }
+        .stat-icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
         }
+        .table > :not(caption) > * > * { padding: .6rem .9rem; vertical-align: middle; }
+        .table thead th {
+            font-size: .75rem; font-weight: 600; letter-spacing: .06em;
+            text-transform: uppercase; color: #6c757d; background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .badge { font-weight: 500; }
     </style>
     <th:block layout:fragment="head-extra"></th:block>
 </head>
 <body>
 
-<!-- ══════════════════════ SIDEBAR ══════════════════════ -->
-<nav id="sidebar">
-    <div class="brand">
-        <i class="bi bi-car-front-fill me-2"></i>Şase Eşleştirme
-    </div>
-
-    <div class="mt-2">
-        <span class="nav-section">Genel</span>
-        <a class="nav-link" th:classappend="${activePage == 'dashboard'} ? 'active'" th:href="@{/}">
-            <i class="bi bi-speedometer2"></i>Dashboard
-        </a>
-
-        <span class="nav-section">Stok</span>
-        <a class="nav-link" th:classappend="${activePage == 'stok'} ? 'active'" th:href="@{/stok}">
-            <i class="bi bi-archive"></i>Stok Listesi
-        </a>
-
-        <span class="nav-section">İşlemler</span>
-        <a class="nav-link" th:classappend="${activePage == 'sase'} ? 'active'" th:href="@{/sase}">
-            <i class="bi bi-diagram-3"></i>Şase Eşleştirme
-        </a>
-        <a class="nav-link" th:classappend="${activePage == 'not'} ? 'active'" th:href="@{/not}">
-            <i class="bi bi-journal-text"></i>Notlar
-        </a>
-    </div>
-
-    <div class="user-area">
-        <div class="text-white-50 small mb-1">
-            <i class="bi bi-person-circle me-1"></i>
-            <span th:if="${currentUser}" th:text="${currentUser.displayName()}"></span>
-            <span th:unless="${currentUser}" sec:authentication="name">Kullanıcı</span>
-        </div>
-        <div th:if="${currentUser}" class="mb-2">
-            <span th:switch="${currentUser.role?.name()}">
-                <span th:case="'ADMIN'" class="badge bg-danger" style="font-size:.65rem;">Admin</span>
-                <span th:case="'YONETICI'" class="badge bg-warning text-dark" style="font-size:.65rem;">Yönetici</span>
-                <span th:case="*" class="badge bg-secondary" style="font-size:.65rem;">Çalışan</span>
-            </span>
-        </div>
-        <form method="post" th:action="@{/logout}">
-            <button class="btn btn-sm btn-outline-light w-100">
-                <i class="bi bi-box-arrow-right me-1"></i>Çıkış Yap
+<!-- navCtxPath / navRequestUri: LayoutNavAdvice (Thymeleaf 3.1+ için #request yok) -->
+<header class="app-site-header" th:with="ctxPath=${navCtxPath} ?: '', uri=${navRequestUri} ?: ''">
+    <nav class="app-topnav" aria-label="Ana üst menü">
+        <div class="container-fluid px-0 app-topnav-inner">
+            <button class="mobile-toggle d-lg-none"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#hdrMenusCollapse"
+                    aria-expanded="false"
+                    aria-controls="hdrMenusCollapse"
+                    aria-label="Menüyü aç / kapat">
+                <i class="bi bi-list-lg"></i>
             </button>
-        </form>
-    </div>
-</nav>
 
-<!-- ══════════════════════ MAIN ══════════════════════ -->
+            <!-- Sol: menü + collapse (mobilde alta taşır) -->
+            <div id="hdrMenusCollapse" class="collapse d-lg-flex app-topnav-menu">
+                <a class="app-nav-item-link"
+                   th:classappend="${activePage == 'dashboard'} ? ' active'"
+                   th:href="@{/}">Anasayfa</a>
+
+                <div class="dropdown app-nav-dropdown">
+                    <button type="button"
+                            class="dropdown-toggle"
+                            id="dropdownGenel"
+                            data-bs-toggle="dropdown"
+                            data-bs-display="static"
+                            aria-expanded="false">
+                        Genel <span class="app-nav-arrow" aria-hidden="true">▾</span>
+                    </button>
+                    <ul class="dropdown-menu app-dropdown-menu" aria-labelledby="dropdownGenel">
+                        <li>
+                            <a class="dropdown-item" th:href="@{/stok}"
+                               th:classappend="${#strings.equals(uri, ctxPath + '/stok')
+                                    or #strings.startsWith(uri, ctxPath + '/stok/')} ? ' active'">
+                                Stok Yönetimi
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{/sase/vw}"
+                               th:classappend="${#strings.contains(uri, '/sase/vw')} ? ' active'">
+                                Stok - Şase Eşleştirme (Formül VW)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{/sase/psa}"
+                               th:classappend="${#strings.contains(uri, '/sase/psa')} ? ' active'">
+                                Stok - Şase Eşleştirme (Formül PEUGEOT)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{/sase/opel}"
+                               th:classappend="${#strings.contains(uri, '/sase/opel')} ? ' active'">
+                                Stok - Şase Eşleştirme (Formül OPEL)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{/sase/fiat}"
+                               th:classappend="${#strings.contains(uri, '/sase/fiat')} ? ' active'">
+                                Stok - Şase Eşleştirme (Formül FIAT)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{/sase}"
+                               th:classappend="${(#strings.endsWith(uri, ctxPath + '/sase')
+                                    or (#strings.startsWith(uri, ctxPath + '/sase/')
+                                        and !#strings.contains(uri, '/sase/vw')
+                                        and !#strings.contains(uri, '/sase/psa')
+                                        and !#strings.contains(uri, '/sase/opel')
+                                        and !#strings.contains(uri, '/sase/fiat')
+                                        and !#strings.contains(uri, '/sase/formul/')))} ? ' active'">
+                                Şase No ve Ekipmanları
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="dropdown app-nav-dropdown">
+                    <button type="button"
+                            class="dropdown-toggle"
+                            id="dropdownAdmin"
+                            data-bs-toggle="dropdown"
+                            data-bs-display="static"
+                            aria-expanded="false">
+                        Admin <span class="app-nav-arrow" aria-hidden="true">▾</span>
+                    </button>
+                    <ul class="dropdown-menu app-dropdown-menu" aria-labelledby="dropdownAdmin">
+                        <li><span class="dropdown-item disabled">Henüz tanımlı admin seçeneği yok</span></li>
+                    </ul>
+                </div>
+
+                <div class="dropdown app-nav-dropdown">
+                    <button type="button"
+                            class="dropdown-toggle"
+                            id="dropdownRapor"
+                            data-bs-toggle="dropdown"
+                            data-bs-display="static"
+                            aria-expanded="false">
+                        Raporlar <span class="app-nav-arrow" aria-hidden="true">▾</span>
+                    </button>
+                    <ul class="dropdown-menu app-dropdown-menu" aria-labelledby="dropdownRapor">
+                        <li><span class="dropdown-item disabled">Henüz tanımlı rapor yok</span></li>
+                    </ul>
+                </div>
+
+                <div class="dropdown app-nav-dropdown">
+                    <button type="button"
+                            class="dropdown-toggle"
+                            id="dropdownWeb"
+                            data-bs-toggle="dropdown"
+                            data-bs-display="static"
+                            aria-expanded="false">
+                        Web <span class="app-nav-arrow" aria-hidden="true">▾</span>
+                    </button>
+                    <ul class="dropdown-menu app-dropdown-menu" aria-labelledby="dropdownWeb">
+                        <li><span class="dropdown-item disabled">Bağlantılar yakında</span></li>
+                    </ul>
+                </div>
+
+                <div class="dropdown app-nav-dropdown">
+                    <button type="button"
+                            class="dropdown-toggle"
+                            id="dropdownMrp"
+                            data-bs-toggle="dropdown"
+                            data-bs-display="static"
+                            aria-expanded="false">
+                        MRP <span class="app-nav-arrow" aria-hidden="true">▾</span>
+                    </button>
+                    <ul class="dropdown-menu app-dropdown-menu" aria-labelledby="dropdownMrp">
+                        <li><span class="dropdown-item disabled">Henüz MRP bağlantısı yok</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Sağ: kullanıcı -->
+            <div class="app-topnav-user">
+                <span class="u-display">
+                    <span aria-hidden="true">👤</span>
+                    <span th:if="${currentUser}" th:text="${currentUser.displayName()}">Kullanıcı</span>
+                    <span th:unless="${currentUser}" sec:authentication="name">Kullanıcı</span>
+                </span>
+                <th:block th:if="${currentUser}">
+                    <span th:switch="${currentUser.role?.name()}">
+                        <span th:case="'ADMIN'" class="badge-role-pill">Admin</span>
+                        <span th:case="'YONETICI'" class="badge-role-pill">Yönetici</span>
+                        <span th:case="*" class="badge-role-pill">Çalışan</span>
+                    </span>
+                </th:block>
+                <form method="post" th:action="@{/logout}" class="m-0">
+                    <button type="submit" class="btn-nav-logout" title="Oturumu kapat">⬛ Çıkış</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+</header>
+
 <div id="main-wrap">
 
-    <!-- Flash mesajları -->
     <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show m-3 mb-0 py-2" role="alert">
         <i class="bi bi-check-circle me-1"></i>
         <span th:text="${successMsg}"></span>
@@ -149,12 +476,26 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <layout:fragment name="content">
+    <th:block layout:fragment="content">
         <!-- sayfa içeriği buraya gelir -->
-    </layout:fragment>
+    </th:block>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function () {
+        function syncHdrShow() {
+            var c = document.getElementById('hdrMenusCollapse');
+            if (!c || !window.matchMedia) return;
+            if (window.matchMedia('(min-width: 992px)').matches) {
+                try { bootstrap.Collapse.getOrCreateInstance(c, {toggle: false}).show(); }
+                catch (e) { c.classList.add('show'); }
+            }
+        }
+        window.addEventListener('resize', syncHdrShow);
+        document.addEventListener('DOMContentLoaded', syncHdrShow);
+    })();
+</script>
 <th:block layout:fragment="scripts"></th:block>
 </body>
 </html>

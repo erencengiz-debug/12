@@ -1,6 +1,7 @@
 package com.sase.app.security;
 
 import com.sase.app.config.AppProperties;
+import com.sase.app.service.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -19,7 +20,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -30,6 +33,7 @@ import java.util.Map;
 public class CookieTokenFilter extends OncePerRequestFilter {
 
     private final JwtDecoder jwtDecoder;
+    private final AuthService authService;
     private final AppProperties appProperties;
 
     @Override
@@ -40,18 +44,32 @@ public class CookieTokenFilter extends OncePerRequestFilter {
         String token = extractTokenFromCookie(request);
 
         if (token != null) {
+            Jwt jwt = null;
             try {
-                Jwt jwt = jwtDecoder.decode(token);
+                jwt = jwtDecoder.decode(token);
+            } catch (JwtException e) {
+                if (authService.isAccessTokenAcceptedByAuthServer(token)) {
+                    try {
+                        jwt = UnverifiedSupabaseJwtParser.parse(token);
+                        log.debug("JWT yerel doğrulanamadı; Supabase /auth/v1/user ile oturum onaylandı");
+                    } catch (ParseException parseException) {
+                        log.debug("Geçersiz JWT token formatı: {}", parseException.getMessage());
+                        SecurityContextHolder.clearContext();
+                        clearTokenCookie(response);
+                    }
+                } else {
+                    log.debug("Geçersiz JWT token: {}", e.getMessage());
+                    SecurityContextHolder.clearContext();
+                    clearTokenCookie(response);
+                }
+            }
+
+            if (jwt != null) {
                 List<SimpleGrantedAuthority> authorities = List.of(
                         new SimpleGrantedAuthority("ROLE_" + extractRole(jwt))
                 );
                 JwtAuthenticationToken auth = new JwtAuthenticationToken(jwt, authorities);
                 SecurityContextHolder.getContext().setAuthentication(auth);
-
-            } catch (JwtException e) {
-                log.debug("Geçersiz JWT token: {}", e.getMessage());
-                SecurityContextHolder.clearContext();
-                clearTokenCookie(response);
             }
         }
 
@@ -70,11 +88,26 @@ public class CookieTokenFilter extends OncePerRequestFilter {
     }
 
     private String extractRole(Jwt jwt) {
-        Map<String, Object> appMeta = jwt.getClaim("app_metadata");
-        if (appMeta != null && appMeta.containsKey("role")) {
+        Map<String, Object> appMeta = claimMap(jwt.getClaim("app_metadata"));
+        if (!appMeta.isEmpty() && appMeta.containsKey("role")) {
             return appMeta.get("role").toString().toUpperCase(Locale.ROOT);
         }
         return "USER";
+    }
+
+    /**
+     * Nimbus JWT claim'leri bazen {@code JSONObject} olarak gelir; roll okumayı güvenilir kılar.
+     */
+    private Map<String, Object> claimMap(Object raw) {
+        if (raw == null) {
+            return Map.of();
+        }
+        if (raw instanceof Map<?,?> m) {
+            Map<String, Object> out = new HashMap<>(m.size());
+            m.forEach((k, v) -> out.put(k.toString(), v));
+            return out;
+        }
+        return Map.of();
     }
 
     private void clearTokenCookie(HttpServletResponse response) {

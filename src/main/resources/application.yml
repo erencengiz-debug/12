@@ -52,6 +52,10 @@ spring:
     encoding: UTF-8
     mode: HTML
 
+  # ─── MVC ─────────────────────────────────────────────────
+  mvc:
+    throw-exception-if-no-handler-found: false
+
 # ─── Server ────────────────────────────────────────────────
 server:
   port: ${SERVER_PORT:8080}
@@ -66,6 +70,8 @@ app:
   supabase:
     project-url: ${SUPABASE_PROJECT_URL}
     anon-key: ${SUPABASE_ANON_KEY}
+    # Legacy JWT (HS256) projelerde JWKS anahtarı dönmez; dashboard’daki JWT Secret’ı buraya verin (asimetrik projelerde BOŞ).
+    jwt-secret: ${SUPABASE_JWT_SECRET:}
   cookie:
     secure: ${COOKIE_SECURE:false}
     same-site: Lax

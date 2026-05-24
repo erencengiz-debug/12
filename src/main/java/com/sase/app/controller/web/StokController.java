@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.UUID;
 
@@ -20,18 +19,13 @@ public class StokController {
     private final StokService stokService;
     private final StokMapper stokMapper;
 
+    /**
+     * Stok SPA (tek sayfa form + grid). Layout ile üst navbar sabit kalır.
+     */
     @GetMapping
-    public String list(
-            @RequestParam(required = false) String q,
-            @RequestParam(defaultValue = "0") int page,
-            Model model
-    ) {
-        var stokPage = stokService.listele(q, page);
-        model.addAttribute("stoklar", stokMapper.toListDtos(stokPage.getContent()));
-        model.addAttribute("stokPage", stokPage);
-        model.addAttribute("q", q);
+    public String stokForm(Model model) {
         model.addAttribute("activePage", "stok");
-        return "stok/list";
+        return "stok/form";
     }
 
     @GetMapping("/{id}")

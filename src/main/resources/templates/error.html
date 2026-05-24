@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}"
+      lang="tr">
+<head>
+    <title>Uygulama Hatası</title>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div class="d-flex align-items-center justify-content-center" style="min-height: 70vh;">
+        <div class="text-center px-3">
+            <div class="text-muted fw-semibold mb-1" th:text="${status ?: 'Hata'}">Hata</div>
+            <h4 class="fw-semibold mt-2 mb-2">Bir sorun oluştu</h4>
+            <p class="text-muted mb-4" th:text="${message ?: (error ?: 'İstek işlenemedi. Lütfen tekrar deneyin.')}" style="max-width: 36rem;"></p>
+            <a th:href="@{/}" class="btn btn-primary">
+                <i class="bi bi-house me-1"></i>Ana sayfa
+            </a>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

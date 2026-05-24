@@ -8,28 +8,30 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.JdkClientHttpConnector;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.source.DefaultJWKSetCache;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
-import com.nimbusds.jose.proc.JWSVerificationKeySelector;
-import com.nimbusds.jose.proc.SecurityContext;
-import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
-import com.nimbusds.jwt.proc.DefaultJWTProcessor;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
+import org.springframework.util.StringUtils;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.net.http.HttpClient;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 
 @Configuration
@@ -88,28 +90,88 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Supabase ES256 JWT'lerini doğrular; JWKS 60 dk cache'lenir (varsayılan 5 dk)
+    /**
+     * Supabase JWT doğrulama: önce JWKS (ES256/asimetrik), başarısız olursa ve
+     * {@code app.supabase.jwt-secret} tanımlıysa HS256 ile tekrar dener (legacy “JWT Secret” projelerinde
+     * JWKS boştur; doğrulama “no matching key(s)” ile düşebilir).
+     * JWKS isteği için {@link RestTemplate} zaman aşımları kullanılır.
+     */
     @Bean
     @Primary
-    public JwtDecoder jwtDecoder(AppProperties props) throws Exception {
-        String issuerUri = props.supabase().projectUrl() + "/auth/v1";
+    public JwtDecoder jwtDecoder(AppProperties props) {
+        JwtDecoder jwkDecoder = buildJwkDecoder(props);
+        String legacySecret = props.supabase().jwtSecret();
+        if (!StringUtils.hasText(legacySecret)) {
+            return jwkDecoder;
+        }
+        JwtDecoder hmacDecoder = buildLegacyHmacJwtDecoder(props, legacySecret);
+        return token -> {
+            try {
+                return jwkDecoder.decode(token);
+            } catch (JwtException primary) {
+                try {
+                    return hmacDecoder.decode(token);
+                } catch (JwtException ignored) {
+                    throw primary;
+                }
+            }
+        };
+    }
+
+    private static JwtDecoder buildJwkDecoder(AppProperties props) {
+        String issuerUri = issuerUriFromProjectUrl(props.supabase().projectUrl());
         String jwksUri = issuerUri + "/.well-known/jwks.json";
 
-        var jwkSetCache = new DefaultJWKSetCache(60, 30, TimeUnit.MINUTES);
-        var jwkSet = new RemoteJWKSet<SecurityContext>(new URL(jwksUri), null, jwkSetCache);
-        var keySelector = new JWSVerificationKeySelector<SecurityContext>(JWSAlgorithm.ES256, jwkSet);
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout((int) Duration.ofSeconds(20).toMillis());
+        factory.setReadTimeout((int) Duration.ofSeconds(60).toMillis());
+        RestTemplate jwksRestTemplate = new RestTemplate(factory);
 
-        ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
-        jwtProcessor.setJWSKeySelector(keySelector);
-
-        NimbusJwtDecoder decoder = new NimbusJwtDecoder(jwtProcessor);
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwksUri)
+                .restOperations(jwksRestTemplate)
+                .build();
         decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuerUri));
         return decoder;
     }
 
+    private static JwtDecoder buildLegacyHmacJwtDecoder(AppProperties props, String jwtSecretPlain) {
+        String issuerUri = issuerUriFromProjectUrl(props.supabase().projectUrl());
+        SecretKey key = new SecretKeySpec(
+                jwtSecretPlain.getBytes(StandardCharsets.UTF_8),
+                "HmacSHA256"
+        );
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withSecretKey(key)
+                .macAlgorithm(MacAlgorithm.HS256)
+                .build();
+        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuerUri));
+        return decoder;
+    }
+
+    private static String issuerUriFromProjectUrl(String projectUrl) {
+        if (projectUrl == null) {
+            return "/auth/v1";
+        }
+        String base = projectUrl.stripTrailing();
+        while (base.endsWith("/")) {
+            base = base.substring(0, base.length() - 1);
+        }
+        return base + "/auth/v1";
+    }
+
+    /**
+     * Supabase çağrıları JDK HttpClient üzerinden (HTTP/1.1). Reactor-Netty ile bazı ortamlarda
+     * oluşan {@code SocketException: Connection reset} sorununu önlemek için.
+     */
     @Bean
     public WebClient supabaseWebClient(AppProperties props) {
+        HttpClient httpClient = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(20))
+                .version(HttpClient.Version.HTTP_1_1)
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .build();
+
         return WebClient.builder()
+                .clientConnector(new JdkClientHttpConnector(httpClient))
                 .baseUrl(props.supabase().projectUrl())
                 .defaultHeader("apikey", props.supabase().anonKey())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

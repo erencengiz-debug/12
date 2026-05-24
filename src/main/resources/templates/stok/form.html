@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}"
+      lang="tr">
+<head>
+    <title>Stok Yönetimi</title>
+    <th:block layout:fragment="head-extra">
+        <link rel="stylesheet" th:href="@{/css/stok-yonetimi-page.css}">
+    </th:block>
+</head>
+<body>
+<th:block layout:fragment="content">
+
+<div class="page-stok">
+    <!-- BÖLÜM 1: Üst form — iki eşit kart -->
+    <div class="stok-form-grid">
+        <section class="stok-card">
+            <header class="stok-card-head">STOK ARAMA</header>
+            <div class="stok-card-body">
+                <div class="stok-field-row">
+                    <label class="stok-field-label" for="arK">Stok Kodu</label>
+                    <div class="stok-field-main">
+                        <input class="stok-control" id="arK" type="text" autocomplete="off" placeholder="">
+                        <div class="stok-field-help">
+                            <span class="stok-field-help-line">(*gdb823*) içinde geçenleri getirir</span>
+                            <span class="stok-field-help-line">(gdb823*) tam kodla ilişkileri getirir</span>
+                            <span class="stok-field-help-line">(gdb823) sadece yazılan kodu getirir</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stok-field-row">
+                    <label class="stok-field-label" for="arI">Stok ID</label>
+                    <div class="stok-field-main"><input class="stok-control" id="arI" type="text" autocomplete="off"></div>
+                </div>
+                <div class="stok-field-row">
+                    <label class="stok-field-label" for="arKat">Stok Kategori</label>
+                    <div class="stok-field-main"><input class="stok-control" id="arKat" type="text" autocomplete="off"></div>
+                </div>
+                <div class="stok-field-row">
+                    <label class="stok-field-label" for="arTan">Stok Tanım</label>
+                    <div class="stok-field-main"><input class="stok-control" id="arTan" type="text" autocomplete="off"></div>
+                </div>
+                <div class="stok-field-row">
+                    <label class="stok-field-label" for="arSts">Stok Status</label>
+                    <div class="stok-field-main">
+                        <select class="stok-control" id="arSts">
+                            <option value="">----</option>
+                            <option>Aktif</option>
+                            <option>Pasif</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="stok-field-row">
+                    <label class="stok-field-label" for="arWeb">Web Status</label>
+                    <div class="stok-field-main">
+                        <select class="stok-control" id="arWeb">
+                            <option value="">Web Status Seç</option>
+                            <option>Web'de Görünsün</option>
+                            <option>Web'de Görünmesin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="stok-field-row stok-field-row--date">
+                    <span class="stok-field-label">Stok Eklenme Tarihi</span>
+                    <div class="stok-date-split">
+                        <div class="stok-date-group">
+                            <span class="stok-date-lbl">Başlangıç</span>
+                            <div class="stok-date-host" id="dBas"></div>
+                        </div>
+                        <div class="stok-date-group">
+                            <span class="stok-date-lbl">Bitiş</span>
+                            <div class="stok-date-host" id="dBit"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stok-card">
+            <header class="stok-card-head">STOK KAYIT İŞLEMLERİ</header>
+            <div class="stok-card-body">
+                <div class="stok-op-row">
+                    <label class="stok-field-label" for="rAlt">Alternatif Stok İsim</label>
+                    <input class="stok-control stok-control--grow" id="rAlt" type="text">
+                    <input class="stok-chk" type="checkbox" id="ck1" checked aria-label="Alan aktif">
+                </div>
+                <div class="stok-op-row">
+                    <label class="stok-field-label" for="rKs">Alternatif Stok Kısa İsim</label>
+                    <input class="stok-control stok-control--grow" id="rKs" type="text">
+                    <input class="stok-chk" type="checkbox" id="ck2" checked aria-label="Alan aktif">
+                </div>
+                <div class="stok-op-row">
+                    <label class="stok-field-label" for="rK1">1. Kategori</label>
+                    <select class="stok-control stok-control--grow" id="rK1"><option value="">-</option><option>Kategori A</option><option>Kategori B</option></select>
+                    <input class="stok-chk" type="checkbox" id="ck3" checked aria-label="Alan aktif">
+                </div>
+                <div class="stok-op-row">
+                    <label class="stok-field-label" for="rK2">2. Kategori</label>
+                    <select class="stok-control stok-control--grow" id="rK2"><option value="">-</option><option>Kategori A</option><option>Kategori B</option></select>
+                    <input class="stok-chk" type="checkbox" id="ck4" checked aria-label="Alan aktif">
+                </div>
+                <div class="stok-op-row">
+                    <label class="stok-field-label" for="rSt">Status</label>
+                    <select class="stok-control stok-control--grow" id="rSt"><option value="">----</option><option>Aktif</option><option>Pasif</option></select>
+                    <input class="stok-chk" type="checkbox" id="ck5" checked aria-label="Alan aktif">
+                </div>
+                <div class="stok-op-row">
+                    <label class="stok-field-label" for="rWs">Web Status</label>
+                    <select class="stok-control stok-control--grow" id="rWs"><option>Web'de Görünsün</option><option>Web'de Görünmesin</option></select>
+                    <input class="stok-chk" type="checkbox" id="ck6" checked aria-label="Alan aktif">
+                </div>
+                <div class="stok-op-row">
+                    <label class="stok-field-label" for="rBr">Bakım / Rektifiye</label>
+                    <select class="stok-control stok-control--grow" id="rBr"><option>Bakım</option><option>Rektifiye</option></select>
+                    <input class="stok-chk" type="checkbox" id="ck7" checked aria-label="Alan aktif">
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- BÖLÜM 2: Butonlar — sol kolon altı Getir, sağ kolon altı Kaydet, en sağ Temizle -->
+    <div class="stok-actions-row">
+        <div class="stok-actions-slot"><button type="button" class="stok-btn stok-btn-primary" id="btnG">Getir</button></div>
+        <div class="stok-actions-slot"><button type="button" class="stok-btn stok-btn-primary" id="btnK">Kaydet</button></div>
+        <div class="stok-actions-slot stok-actions-slot--trail"><button type="button" class="stok-btn stok-btn-ghost" id="btnC">Formu Temizle</button></div>
+    </div>
+
+    <div class="stok-msg" id="wmsg" role="status"></div>
+
+    <!-- BÖLÜM 3: Tablo -->
+    <div class="stok-table-meta">
+        <div class="stok-table-meta-left">
+            <span class="js-pmsg stok-pmsg-text">No data to paginate</span>
+            <div class="stok-pager">
+                <button type="button" class="stok-page-btn" data-pager="first" title="İlk">&laquo;</button>
+                <button type="button" class="stok-page-btn" data-pager="prev" title="Önceki">&lsaquo;</button>
+                <button type="button" class="stok-page-btn" data-pager="next" title="Sonraki">&rsaquo;</button>
+                <button type="button" class="stok-page-btn" data-pager="last" title="Son">&raquo;</button>
+            </div>
+        </div>
+        <div class="stok-table-meta-right" aria-hidden="true"></div>
+    </div>
+
+    <div class="stok-table-scroll">
+        <table class="stok-grid" id="maint">
+            <thead>
+                <tr>
+                    <th class="stok-th-select" scope="col" title="Seç"><input type="checkbox" id="chkHead" class="stok-th-chk" aria-label="Bu sayfadakiler"></th>
+                    <th class="stok-th-ico" scope="col"><span title="Foto"><i class="bi bi-camera" aria-hidden="true"></i></span></th>
+                    <th class="stok-th-ico" scope="col"><span title="Alış"><i class="bi bi-box-arrow-in-down" aria-hidden="true"></i></span></th>
+                    <th class="stok-th-ico" scope="col"><span title="Çıkış"><i class="bi bi-box-arrow-up" aria-hidden="true"></i></span></th>
+                    <th scope="col">ORJ NO</th>
+                    <th scope="col">MODEL KODU</th>
+                    <th scope="col">MARKA KODU</th>
+                    <th scope="col">STOK ADI</th>
+                    <th scope="col">ALTERNATİF STOK ADI</th>
+                    <th scope="col">KISA ADI</th>
+                    <th scope="col">ALTERNATİF KISA ADI</th>
+                    <th scope="col">FİYAT 1</th>
+                    <th scope="col">FİYAT 2</th>
+                    <th scope="col">FİYAT 3</th>
+                    <th scope="col">FİYAT 10</th>
+                    <th scope="col">REKTİFİYE</th>
+                    <th scope="col">BAKIM</th>
+                    <th scope="col">ONLİNE</th>
+                    <th scope="col">KATEGORİ-1</th>
+                    <th scope="col">KATEGORİ-2</th>
+                    <th scope="col">DEPO MKZ.</th>
+                    <th scope="col">DEPO TOP.</th>
+                    <th scope="col">STOK STATUS</th>
+                    <th scope="col">CREATE DATE</th>
+                </tr>
+                <tr id="ftr"></tr>
+            </thead>
+            <tbody id="bod"></tbody>
+        </table>
+    </div>
+
+    <div class="stok-table-meta stok-table-meta--bottom">
+        <div class="stok-table-meta-left">
+            <span class="js-pmsg stok-pmsg-text">No data to paginate</span>
+            <div class="stok-pager">
+                <button type="button" class="stok-page-btn" data-pager="first">&laquo;</button>
+                <button type="button" class="stok-page-btn" data-pager="prev">&lsaquo;</button>
+                <button type="button" class="stok-page-btn" data-pager="next">&rsaquo;</button>
+                <button type="button" class="stok-page-btn" data-pager="last">&raquo;</button>
+            </div>
+        </div>
+        <div class="stok-table-meta-right"></div>
+    </div>
+
+    <p class="stok-footnote">Bu ekrandaki kayıtlar yalnızca tarayıcı belleğindedir (oturum süresince).</p>
+</div>
+
+</th:block>
+
+<th:block layout:fragment="scripts">
+    <script th:src="@{/js/stok-yonetimi-page.js}" defer></script>
+</th:block>
+</body>
+</html>

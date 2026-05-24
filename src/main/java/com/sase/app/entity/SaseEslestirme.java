@@ -6,11 +6,11 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "sase_eslestirme_vw")
+@Table(name = "sase_eslestirme_vw", schema = "public")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -79,7 +79,7 @@ public class SaseEslestirme extends BaseEntity {
     private Boolean executed;
 
     @Column(name = "executed_date")
-    private OffsetDateTime executedDate;
+    private LocalDateTime executedDate;
 
     @Column(name = "eslenik_sase_adedi")
     private Integer eslenikSaseAdedi;
